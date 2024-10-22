@@ -33,6 +33,19 @@ function Login() {
                     console.log(role);
                    
                 } 
+                if  (role =='CADRE_ADMINISTRATIF'){
+                    navigate('/HomeCA');
+                }
+                if (role== ('DIRECTEUR_DIVISION')){
+                    navigate('/HomeCD')
+                }
+                if (role== ('CHEF_POLE')){
+                    navigate('/HomeCP')
+                }
+                if (role== ('CHEF_PROJET')){
+                    navigate('/HomeCDP')
+                }
+
             } else {
                 console.log("by by");
             }

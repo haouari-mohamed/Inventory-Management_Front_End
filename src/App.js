@@ -122,6 +122,8 @@ function App() {
                 />
               ))}
               <Route path="/" element={<RootRedirect />} />
+              <Route path="*" element={<Navigate to="/login" replace />} />
+
             </Routes>
           </Router>
         </AffaireProvider>
