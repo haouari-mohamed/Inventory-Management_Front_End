@@ -3,40 +3,36 @@ import { Container, Form, Button, Card, Alert, Image } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faLock, faEnvelope } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { redirect, useNavigate } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
+import AuthentificationService from '../service/AuthentificationService';
+import DecodeJwtService from '../service/DecodeJwtService';
 
 function Login() {
     const [identifier, setIdentifier] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const navigate = useNavigate();
-    const { setUser } = useUser();
-
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
         try {
-            const trimmedLowercaseIdentifier = identifier.trim().toLowerCase();
-            const response = await axios.post('http://localhost:8080/api/utilisateurs/login', {
-                identifier: trimmedLowercaseIdentifier,
-                password
+            const trimmedLowercaseIdentifier = identifier.trim();
+            
+            const response = await AuthentificationService.login({
+                username: trimmedLowercaseIdentifier,
+                password: password
             });
-            console.log('Login response:', response.data);
-            if (response.data.redirectionLink) {
-                // Save user information
-                const userId = response.data.id_utilisateur; // Make sure this matches the field name in your API response
-                setUser({
-                    id_utilisateur: userId,
-                    username: response.data.username || trimmedLowercaseIdentifier,
-                    email: response.data.email || trimmedLowercaseIdentifier
-                });
-                // Save user ID in local storage
-                localStorage.setItem('userId', userId);
-                console.log('Saved userId to localStorage:', userId);
-                navigate(response.data.redirectionLink);
+    
+            if (response.token) {
+                console.log("Login success");
+                localStorage.setItem("jwt", response.token);
+                const role=DecodeJwtService.getRoleFromToken(response.token)
+                if (role==='ADMIN'){
+                    navigate('/HomeCA')
+                }
             } else {
-                setError('Connexion réussie mais aucun lien de redirection fourni.');
+                console.log("by by");
             }
         } catch (error) {
             console.error('Login error:', error);
@@ -78,7 +74,7 @@ function Login() {
                                     <FontAwesomeIcon icon={faLock} />
                                 </span>
                                 <Form.Control
-                                    type="password"
+                                    type="text"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     required
