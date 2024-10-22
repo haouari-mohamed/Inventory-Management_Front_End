@@ -1,4 +1,4 @@
-import jwtDecode from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 import axios from 'axios';
 
 class DecodeJwtService {
@@ -20,7 +20,7 @@ class DecodeJwtService {
 
     getRoleFromToken(token) {
         const decodedToken = this.decodeToken(token);
-        return decodedToken.role;
+        return decodedToken.roles;
     }
 
     async getIdByUsername(token) {
