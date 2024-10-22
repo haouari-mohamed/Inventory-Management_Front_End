@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-d
 import { AffaireProvider } from './context/AffaireContext';
 import PageMeta from './PageMeta';
 import { UserProvider, useUser } from './context/UserContext';
+import AuthGuard from './service/Guard/AuthGuard';
 
 // Import views
 import Login from './views/login';
@@ -58,8 +59,8 @@ function RootRedirect() {
 
 // Update the routes array with French titles
 const routes = [
-  { path: '/login', element: Login, title: 'Login' },
-  { path: '/HomeCA', element: HomeCA, title: 'Accueil - CID' },
+  { path: '/login', element: Login, title: 'Login', public: true },
+  { path: '/HomeCA', element: HomeCA, title: 'Accueil - CID', public: false },
   { path: '/addAffaireCA', element: AddAffaireCA, title: 'Ajouter Affaire - CID' },
   { path: '/afficherAffaireCA', element: AfficherAffaireCA, title: 'Afficher Affaire - CID' },
   { path: '/AddMissionCA', element: AddMissionCA, title: 'Ajouter Mission - CID' },
@@ -88,7 +89,7 @@ const routes = [
   { path: '/afficherPartenaire', element: AfficherPartenaire, title: 'Gestion des Partenaires - CID' },
   { path: '/HomeAdmin', element: HomeAdmin, title: 'Accueil - CID' },
   { path: '/profileCA', element: ProfilePageCA, title: 'Profile - CID' },
-  { path: '/logout', element: LogoutComponent, title: 'Logout - CID' },
+  { path: '/logout', element: LogoutComponent, title: 'Logout', public: true },
   { path: '/profileAdmin', element: ProfilePageAdmin, title: 'Profile - CID' },
   { path: '/profileCP', element: ProfilePageCP, title: 'Profile - CID' },
   { path: '/profileCD', element: ProfilePageCD, title: 'Profile - CID' },
@@ -96,29 +97,36 @@ const routes = [
 ];
 
 function App() {
-  return (
-    <UserProvider>
-      <AffaireProvider>
-        <Router>
-          <Routes>
-            {routes.map(({ path, element: Element, title }) => (
-              <Route 
-                key={path} 
-                path={path} 
-                element={
-                  <>
-                    <PageMeta title={title} />
-                    <Element />
-                  </>
-                } 
-              />
-            ))}
-            <Route path="/" element={<RootRedirect />} />
-          </Routes>
-        </Router>
-      </AffaireProvider>
-    </UserProvider>
-  );
-}
-
-export default App;
+    return (
+      <UserProvider>
+        <AffaireProvider>
+          <Router>
+            <Routes>
+              {routes.map(({ path, element: Element, title, public: isPublic }) => (
+                <Route 
+                  key={path} 
+                  path={path} 
+                  element={
+                    isPublic ? (
+                      <>
+                        <PageMeta title={title} />
+                        <Element />
+                      </>
+                    ) : (
+                      <AuthGuard>
+                        <PageMeta title={title} />
+                        <Element />
+                      </AuthGuard>
+                    )
+                  } 
+                />
+              ))}
+              <Route path="/" element={<RootRedirect />} />
+            </Routes>
+          </Router>
+        </AffaireProvider>
+      </UserProvider>
+    );
+  }
+  
+  export default App;
