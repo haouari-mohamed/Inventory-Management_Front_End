@@ -29,8 +29,10 @@ function Login() {
                 localStorage.setItem("jwt", response.token);
                 const role=DecodeJwtService.getRoleFromToken(response.token)
                 if (role==='ADMIN'){
-                    navigate('/HomeCA')
-                }
+                    navigate('/HomeAdmin');
+                    console.log(role);
+                   
+                } 
             } else {
                 console.log("by by");
             }

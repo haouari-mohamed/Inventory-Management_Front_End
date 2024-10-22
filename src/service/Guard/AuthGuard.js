@@ -37,17 +37,17 @@ const isAuthorized = (path, role) => {
   }
 
   switch (role) {
-    case 'ROLE_ADMIN':
+    case 'ADMIN':
       if (path.startsWith('/admin') || 
           path === '/HomeAdmin' || 
           path === '/profileAdmin' ||
           path.includes('/afficher') || 
-          path.includes('/add')) {
+          path.includes('/add') ) {
         return true;
       }
       break;
 
-    case 'ROLE_CADRE_ADMIN':
+    case 'CADRE_ADMINISTRATIF':
       if (path.includes('CA') || 
           path === '/HomeCA' || 
           path === '/profileCA' ||
@@ -56,7 +56,7 @@ const isAuthorized = (path, role) => {
       }
       break;
 
-    case 'ROLE_CHEF_POLE':
+    case 'CHEF_POLE':
       if (path.includes('CP') || 
           path === '/HomeCP' || 
           path === '/profileCP') {
@@ -64,7 +64,7 @@ const isAuthorized = (path, role) => {
       }
       break;
 
-    case 'ROLE_CHEF_DIVISION':
+    case 'DIRECTEUR_DIVISION':
       if (path.includes('CD') || 
           path === '/HomeCD' || 
           path === '/profileCD') {
@@ -72,7 +72,7 @@ const isAuthorized = (path, role) => {
       }
       break;
 
-    case 'ROLE_CHEF_PROJET':
+    case 'CHEF_PROJET':
       if (path.includes('CDP') || 
           path === '/HomeCDP' || 
           path === '/profileCDP') {
@@ -86,15 +86,15 @@ const isAuthorized = (path, role) => {
 
 const getHomePageForRole = (role) => {
   switch (role) {
-    case 'ROLE_ADMIN':
+    case 'ADMIN':
       return '/HomeAdmin';
-    case 'ROLE_CADRE_ADMIN':
+    case 'CADRE_ADMINISTRATIF':
       return '/HomeCA';
-    case 'ROLE_CHEF_POLE':
+    case 'CHEF_POLE':
       return '/HomeCP';
-    case 'ROLE_CHEF_DIVISION':
+    case 'DIRECTEUR_DIVISION':
       return '/HomeCD';
-    case 'ROLE_CHEF_PROJET':
+    case 'CHEF_PROJET':
       return '/HomeCDP';
     default:
       return '/login';
