@@ -39,6 +39,7 @@ import ProfilePageAdmin from './Admin/profileAdmin';
 import ProfilePageCP from './ChefPole/profileCP';
 import ProfilePageCD from './ChefDiv/profileCD';
 import ProfilePageCDP from './ChefProjet/profileCDP';
+import AuthGuard from './service/AuthGuard';
 
 function LogoutComponent() {
   const { setUser } = useUser();
@@ -51,15 +52,13 @@ function LogoutComponent() {
   return <Navigate to="/login" />;
 }
 
-// Root redirect component
 function RootRedirect() {
   return <Navigate to="/login" replace />;
 }
 
-// Update the routes array with French titles
 const routes = [
   { path: '/login', element: Login, title: 'Login' },
-  { path: '/HomeCA', element: HomeCA, title: 'Accueil - CID' },
+  { path: '/HomeCA', element: HomeCA,protected: true, role: 'ADMIN', title: 'Accueil - CID' },
   { path: '/addAffaireCA', element: AddAffaireCA, title: 'Ajouter Affaire - CID' },
   { path: '/afficherAffaireCA', element: AfficherAffaireCA, title: 'Afficher Affaire - CID' },
   { path: '/AddMissionCA', element: AddMissionCA, title: 'Ajouter Mission - CID' },
@@ -101,14 +100,20 @@ function App() {
       <AffaireProvider>
         <Router>
           <Routes>
-            {routes.map(({ path, element: Element, title }) => (
+            {routes.map(({ path, element: Element, title, protected: isProtected, role }) => (
               <Route 
                 key={path} 
                 path={path} 
                 element={
                   <>
                     <PageMeta title={title} />
-                    <Element />
+                    {isProtected ? (
+                      <AuthGuard role={role}>
+                        <Element />
+                      </AuthGuard>
+                    ) : (
+                      <Element />
+                    )}
                   </>
                 } 
               />
@@ -120,5 +125,7 @@ function App() {
     </UserProvider>
   );
 }
+
+
 
 export default App;
