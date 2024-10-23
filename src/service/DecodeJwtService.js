@@ -27,9 +27,8 @@ class DecodeJwtService {
 
     async getIdByUsername(token) {
         const username = this.getUsernameFromToken(token);
-        const response = await axios.get(`http://localhost:8080/api/utilisateurs/findIdByUsername/${username}`);
+        const response = await axios.get(`http://localhost:8080/api/utilisateurs/find/utilisateur/${username}`);
         return response.data;
-        
     }
 }
 

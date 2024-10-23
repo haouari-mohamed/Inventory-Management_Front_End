@@ -43,7 +43,7 @@ const FormField = ({ label, id, type = 'text', name, value, onChange, options, d
     </Form.Group>
 );
 
-const RepartirMissionCD = () => {
+const  RepartirMissionCD = () => {
     const { idMission } = useParams();
     const navigate = useNavigate();
     const [mission, setMission] = useState(null);

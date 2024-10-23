@@ -38,8 +38,8 @@ const AfficherAffaire = () => {
     const [selectedAffaire, setSelectedAffaire] = useState(null);
 
     const fetchUserDivision = async () => {
-        const userId = localStorage.getItem('userId');
         try {
+            const userId = localStorage.getItem('userId');
             const response = await axios.get(`http://localhost:8080/api/utilisateurs/${userId}`);
             setUserDivision(response.data.division);
         } catch (error) {

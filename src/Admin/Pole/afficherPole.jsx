@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import axios from 'axios';
+import apiClient from '../../../src/service/Intercepteur'; // Use the apiClient instead of axios
 import { Button, Modal, Form, Table, Alert } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -33,7 +33,7 @@ const AfficherPole = () => {
     const fetchPoles = async () => {
         setIsLoading(true);
         try {
-            const response = await axios.get('http://localhost:8080/api/poles');
+            const response = await apiClient.get('/api/poles'); 
             setPoles(response.data);
         } catch (error) {
             console.error('Error fetching poles:', error);
@@ -59,7 +59,7 @@ const AfficherPole = () => {
 
     const handleUpdatePole = async () => {
         try {
-            await axios.put(`http://localhost:8080/api/poles/${editingPole.id_pole}`, editingPole);
+            await apiClient.put(`/api/poles/${editingPole.id_pole}`, editingPole); // Use apiClient instead of axios
             fetchPoles();
             setShowEditModal(false);
         } catch (error) {
@@ -74,7 +74,7 @@ const AfficherPole = () => {
 
     const confirmDeletePole = async () => {
         try {
-            const response = await axios.delete(`http://localhost:8080/api/poles/${deletingPole.id_pole}`);
+            const response = await apiClient.delete(`/api/poles/${deletingPole.id_pole}`); // Use apiClient instead of axios
             if (response.status === 200) {
                 fetchPoles();
                 setShowDeleteModal(false);
@@ -93,7 +93,7 @@ const AfficherPole = () => {
 
     const confirmCascadeDelete = async () => {
         try {
-            await axios.delete(`http://localhost:8080/api/poles/${deletingPole.id_pole}/cascade`);
+            await apiClient.delete(`/api/poles/${deletingPole.id_pole}/cascade`); // Use apiClient instead of axios
             fetchPoles();
             setShowCascadeDeleteModal(false);
         } catch (error) {
@@ -103,7 +103,7 @@ const AfficherPole = () => {
 
     const handleAddPole = async () => {
         try {
-            await axios.post('http://localhost:8080/api/poles', newPole);
+            await apiClient.post('/api/poles', newPole); // Use apiClient instead of axios
             fetchPoles();
             setShowAddModal(false);
             setNewPole({ libelle_pole: '' });
@@ -117,30 +117,6 @@ const AfficherPole = () => {
             return (
                 <tr>
                     <td colSpan="3" className="text-center">Chargement...</td>
-                </tr>
-            );
-        }
-
-        if (poles.length === 0) {
-            return (
-                <tr>
-                    <td colSpan="3" className="text-center">
-                        <Alert variant="info">
-                            Aucun pôle n'existe dans la base de données.
-                        </Alert>
-                    </td>
-                </tr>
-            );
-        }
-
-        if (filteredPoles.length === 0) {
-            return (
-                <tr>
-                    <td colSpan="3" className="text-center">
-                        <Alert variant="warning">
-                            Aucun pôle n'existe avec le nom "{searchTerm}".
-                        </Alert>
-                    </td>
                 </tr>
             );
         }
@@ -283,7 +259,7 @@ const AfficherPole = () => {
                     centered
                 >
                     <Modal.Header closeButton>
-                        <Modal.Title>Confirmer la suppression</Modal.Title>
+                        <Modal.Title>Supprimer le pôle</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
                         Êtes-vous sûr de vouloir supprimer ce pôle ?
@@ -305,18 +281,23 @@ const AfficherPole = () => {
                     centered
                 >
                     <Modal.Header closeButton>
-                        <Modal.Title>Confirmer la suppression en cascade</Modal.Title>
+                        <Modal.Title>Suppression en cascade</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
-                        <p>{deleteError}</p>
-                        <p>Êtes-vous sûr de vouloir supprimer ce pôle et toutes les données associées ?</p>
+                        {deleteError ? (
+                            <Alert variant="danger">
+                                {deleteError}
+                            </Alert>
+                        ) : (
+                            "Êtes-vous sûr de vouloir supprimer ce pôle et toutes ses dépendances ?"
+                        )}
                     </Modal.Body>
                     <Modal.Footer>
                         <Button variant="secondary" onClick={() => setShowCascadeDeleteModal(false)}>
                             Annuler
                         </Button>
                         <Button variant="danger" onClick={confirmCascadeDelete}>
-                            Supprimer en cascade
+                            Supprimer tout
                         </Button>
                     </Modal.Footer>
                 </Modal>
