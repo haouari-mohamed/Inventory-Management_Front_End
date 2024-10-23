@@ -3,8 +3,7 @@ import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-d
 import { AffaireProvider } from './context/AffaireContext';
 import PageMeta from './PageMeta';
 import { UserProvider, useUser } from './context/UserContext';
-import AuthGuard from './service/Guard/AuthGuard';
-
+import AuthGuard from'./service/Guard/AuthGuard';
 // Import views
 import Login from './views/login';
 import HomeCA from './CadreAdmin/homeCA';
@@ -52,13 +51,12 @@ function LogoutComponent() {
   return <Navigate to="/login" />;
 }
 
-// Root redirect component
 function RootRedirect() {
   return <Navigate to="/login" replace />;
 }
 
-// Update the routes array with French titles
 const routes = [
+
   { path: '/login', element: Login, title: 'Login', public: true },
   { path: '/HomeCA', element: HomeCA, title: 'Accueil - CID', public: false },
   { path: '/addAffaireCA', element: AddAffaireCA, title: 'Ajouter Affaire - CID' },

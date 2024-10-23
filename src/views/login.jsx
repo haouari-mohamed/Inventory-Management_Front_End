@@ -31,7 +31,6 @@ function Login() {
                 if (role==='ADMIN'){
                     navigate('/HomeAdmin');
                     console.log(role);
-                   
                 } 
                 if  (role =='CADRE_ADMINISTRATIF'){
                     navigate('/HomeCA');
