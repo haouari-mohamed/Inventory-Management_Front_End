@@ -11,11 +11,13 @@ class DecodeJwtService {
 
     decodeToken(token) {
         return jwtDecode(token);
+       
     }
 
     getUsernameFromToken(token) {
         const decodedToken = this.decodeToken(token);
         return decodedToken.sub; 
+       
     }
 
     getRoleFromToken(token) {

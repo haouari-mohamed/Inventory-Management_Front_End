@@ -29,8 +29,22 @@ function Login() {
                 localStorage.setItem("jwt", response.token);
                 const role=DecodeJwtService.getRoleFromToken(response.token)
                 if (role==='ADMIN'){
-                    navigate('/HomeCA')
+                    navigate('/HomeAdmin');
+                    console.log(role);
+                } 
+                if  (role =='CADRE_ADMINISTRATIF'){
+                    navigate('/HomeCA');
                 }
+                if (role== ('DIRECTEUR_DIVISION')){
+                    navigate('/HomeCD')
+                }
+                if (role== ('CHEF_POLE')){
+                    navigate('/HomeCP')
+                }
+                if (role== ('CHEF_PROJET')){
+                    navigate('/HomeCDP')
+                }
+
             } else {
                 console.log("by by");
             }
@@ -87,11 +101,14 @@ function Login() {
                         <Button type="submit" className="w-100 btn btn-lg btn-primary py-3">
                             Se connecter
                         </Button>
+                       
+
                     </Form>
                 </Card.Body>
             </Card>
         </Container>
     );
+   
 }
 
 export default Login;
