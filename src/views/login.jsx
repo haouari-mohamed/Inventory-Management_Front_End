@@ -24,14 +24,14 @@ function Login() {
                 password: password
             });
     
-            if (response.token) {
+            if (response) {
                 console.log("Login success");
                 localStorage.setItem("jwt", response.token);
+                localStorage.setItem("userId",response.userId)
                 const role=DecodeJwtService.getRoleFromToken(response.token)
                 if (role==='ADMIN'){
                     navigate('/HomeAdmin');
                     console.log(role);
-                   
                 } 
                 if  (role =='CADRE_ADMINISTRATIF'){
                     navigate('/HomeCA');

@@ -31,8 +31,7 @@ const AfficherMissionCD = () => {
             try {
                 setLoading(true);
                 setError(null);
-
-                // Fetch affaire data
+               
                 const affaireResponse = await axios.get(`http://localhost:8080/api/affaires/${idAffaire}`);
                 setAffaire(affaireResponse.data);
 
