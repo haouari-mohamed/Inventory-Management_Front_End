@@ -8,6 +8,7 @@ const AuthGuard = ({ children }) => {
   
   if (!token) {
     // Redirect to login if there's no token
+    localStorage.removeItem('jwt');
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
@@ -35,6 +36,7 @@ const isAuthorized = (path, role) => {
   if (path === '/login' || path === '/logout') {
     return true;
   }
+  
 
   switch (role) {
     case 'ADMIN':
