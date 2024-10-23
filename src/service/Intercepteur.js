@@ -3,7 +3,7 @@ import axios from 'axios';
 
 // Créer une instance Axios
 const apiClient = axios.create({
-    baseURL: 'http://localhost:8080/',
+    baseURL: 'http://localhost:8080',
 });
 
 apiClient.interceptors.request.use(
@@ -11,6 +11,7 @@ apiClient.interceptors.request.use(
         const token = localStorage.getItem('jwt');
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
+            console.log("/////////////////////// "+config.headers.Authorization)
         }
         return config;
     },
