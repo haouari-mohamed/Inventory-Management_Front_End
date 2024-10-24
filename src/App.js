@@ -39,6 +39,7 @@ import ProfilePageAdmin from './Admin/profileAdmin';
 import ProfilePageCP from './ChefPole/profileCP';
 import ProfilePageCD from './ChefDiv/profileCD';
 import ProfilePageCDP from './ChefProjet/profileCDP';
+import AffairesMissionsDivisions from './ChefDiv/missionAffaireCD';
 
 function LogoutComponent() {
   const { setUser } = useUser();
@@ -67,6 +68,7 @@ const routes = [
   { path: '/afficherAffaireCP', element: AfficherAffaireCP, title: 'Afficher Affaire - CID' },
   { path: '/afficherMissionCP/:affaireId', element: AfficherMissionCP, title: 'Afficher Mission - CID' }, 
   { path: '/HomeCD', element: HomeCD, title: 'Accueil - CID' },
+  { path: '/missionAffaire', element:AffairesMissionsDivisions , title: 'Mission Affaire - CID',public:true },
   { path: '/afficherAffaireCD', element: AfficherAffaireCD, title: 'Afficher Affaire - CID' },
   { path: '/repartirMissionCD/:idMission', element: RepartirMissionCD, title: 'Répartir les Missions - CID' },
   { path: '/afficherMissionCD/:idAffaire', element: AfficherMissionCD, title: 'Afficher Mission - CID' },
