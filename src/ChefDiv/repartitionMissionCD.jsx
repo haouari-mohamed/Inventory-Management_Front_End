@@ -43,7 +43,7 @@ const FormField = ({ label, id, type = 'text', name, value, onChange, options, d
     </Form.Group>
 );
 
-const  RepartirMissionCD = () => {
+const RepartirMissionCD = () => {
     const { idMission } = useParams();
     const navigate = useNavigate();
     const [mission, setMission] = useState(null);
@@ -307,7 +307,7 @@ const  RepartirMissionCD = () => {
                             <div className="col-md-12">
                                 <div className="card">
                                     <div className="card-header">
-                                        <h4 className="card-title">Formulaire de répartition de la mission: {mission.libelle_mission}</h4>
+                                        <h4 className="card-title">Formulaire de répartition de la mission: {mission?.libelle_mission}</h4>
                                     </div>
                                     <div className="card-body">
                                         <Form onSubmit={handleSubmit}>
@@ -319,12 +319,12 @@ const  RepartirMissionCD = () => {
                                                             id="principalDivision"
                                                             name="principalDivision"
                                                             value={{ 
-                                                                value: mission.principalDivision?.id_division, 
-                                                                label: mission.principalDivision?.nom_division 
+                                                                value: mission?.principalDivision?.id_division, 
+                                                                label: mission?.principalDivision?.nom_division 
                                                             }}
                                                             options={[{ 
-                                                                value: mission.principalDivision?.id_division, 
-                                                                label: mission.principalDivision?.nom_division 
+                                                                value: mission?.principalDivision?.id_division, 
+                                                                label: mission?.principalDivision?.nom_division 
                                                             }]}
                                                             isDisabled={true}
                                                         />
@@ -337,7 +337,7 @@ const  RepartirMissionCD = () => {
                                                             type="number"
                                                             id="principalDivisionPart"
                                                             name="principalDivisionPart"
-                                                            value={repartition.principalDivisionPart}
+                                                            value={repartition?.principalDivisionPart}
                                                             onChange={handlePrincipalDivisionPartChange}
                                                             required
                                                         />
@@ -475,7 +475,7 @@ const  RepartirMissionCD = () => {
                                             </Button>
 
                                             <div className="mt-4">
-                                                <strong>Total des parts: {totalPart.toFixed(2)} / {mission.partMissionCID} (Part CID de la mission)</strong>
+                                                <strong>Total des parts: {totalPart.toFixed(2)} / {mission?.partMissionCID} (Part CID de la mission)</strong>
                                             </div>
 
                                             {errorMessage && <div className="alert alert-danger mt-3">{errorMessage}</div>}
