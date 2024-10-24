@@ -6,12 +6,12 @@ const Footer = () => (
             <nav className="pull-left">
                 <ul className="nav">
                     <li className="nav-item">
-                        <a className="nav-link" href="https://www.linkedin.com/in/alyae-essiba/">
-                            Alyae Essiba
+                        <a className="nav-link" href="https://www.linkedin.com/in/salma-baouch-b3b915225/">
+                          Salma Baouch
                         </a>
                     </li>
                     <li className="nav-item">
-                        <a className="nav-link" href="https://www.linkedin.com/in/yahya-zini/"> Yahya Zini </a>
+                        <a className="nav-link" href="https://www.linkedin.com/in/mohamed-haouari-62bb86209/"> Mohamed Haouari </a>
                     </li>
                 </ul>
             </nav>
