@@ -2,7 +2,7 @@
 /* eslint-disable jsx-a11y/img-redundant-alt */
 /* eslint-disable no-script-url */
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React, { useState, useEffect, useMemo } from 'react';
+/* import React, { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import { Modal, Button } from 'react-bootstrap';
@@ -12,9 +12,9 @@ import Sidebar from './components/sideBar';
 import MainHeader from './components/mainHeader';
 import Footer from './components/footer';
 
-// At the top of your file, configure axios
+
 axios.defaults.withCredentials = true;
-axios.defaults.timeout = 5000; // 5 seconds timeout
+axios.defaults.timeout = 5000; 
 
 const AfficherMissionCD = () => {
     const { idAffaire } = useParams();
@@ -220,6 +220,186 @@ const AfficherMissionCD = () => {
                         variant="primary"
                         onClick={() => handleRepartitionClick(selectedMission.id_mission)}>
                         Répartition des tâches
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+        </div>
+    );
+};
+
+export default AfficherMissionCD;
+ */
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable jsx-a11y/img-redundant-alt */
+/* eslint-disable no-script-url */
+/* eslint-disable jsx-a11y/anchor-is-valid */
+import React, { useState, useEffect, useMemo } from 'react';
+import axios from 'axios';
+import { useParams } from 'react-router-dom';
+import { Modal, Button } from 'react-bootstrap';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faInfo, faSort, faSortUp, faSortDown } from '@fortawesome/free-solid-svg-icons';
+import Sidebar from './components/sideBar';
+import MainHeader from './components/mainHeader';
+import Footer from './components/footer';
+
+// Configure axios
+axios.defaults.withCredentials = true;
+axios.defaults.timeout = 5000; // 5 seconds timeout
+
+const AfficherMissionCD = () => {
+    // Extract division ID from URL params
+    const { idDivision } = useParams();
+    const [missions, setMissions] = useState([]);
+    const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
+    const [showModal, setShowModal] = useState(false);
+    const [selectedMission, setSelectedMission] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const fetchMissionsByDivision = async () => {
+            try {
+                setLoading(true);
+                setError(null);
+
+                const userId=localStorage.getItem('userId')
+                const response = await axios.get(`http://localhost:8080/api/missions/missionbydivision/${userId}`);
+                setMissions(response.data);
+                setLoading(false);
+            } catch (error) {
+                console.error('Error fetching missions:', error);
+                if (error.response) {
+                    setError(`Server error: ${error.response.status}`);
+                } else if (error.request) {
+                    setError('No response received from server. Please check your network connection.');
+                } else {
+                    setError(`Request error: ${error.message}`);
+                }
+                setLoading(false);
+            }
+        };
+
+        fetchMissionsByDivision();
+    }, [idDivision]);
+
+    const requestSort = (key) => {
+        let direction = 'ascending';
+        if (sortConfig.key === key && sortConfig.direction === 'ascending') {
+            direction = 'descending';
+        }
+        setSortConfig({ key, direction });
+    };
+
+    const getSortIcon = (columnName) => {
+        if (sortConfig.key === columnName) {
+            return sortConfig.direction === 'ascending' ? faSortUp : faSortDown;
+        }
+        return faSort;
+    };
+
+    const sortedMissions = useMemo(() => {
+        let sortableMissions = [...missions];
+        if (sortConfig.key !== null) {
+            sortableMissions.sort((a, b) => {
+                if (a[sortConfig.key] < b[sortConfig.key]) {
+                    return sortConfig.direction === 'ascending' ? -1 : 1;
+                }
+                if (a[sortConfig.key] > b[sortConfig.key]) {
+                    return sortConfig.direction === 'ascending' ? 1 : -1;
+                }
+                return 0;
+            });
+        }
+        return sortableMissions;
+    }, [missions, sortConfig]);
+
+    const handleShowModal = (mission) => {
+        setSelectedMission(mission);
+        setShowModal(true);
+    };
+
+    const handleCloseModal = () => setShowModal(false);
+
+    if (loading) return <div>Loading...</div>;
+    if (error) return <div>Error: {error}</div>;
+
+    return (
+        <div className="wrapper">
+            <Sidebar />
+            <div className="main-panel">
+                <MainHeader />
+                <div className="container">
+                    <div className="page-inner">
+                        <div className="page-header">
+                            <h3 className="fw-bold mb-3">Missions pour la division: {idDivision}</h3>
+                        </div>
+                        <div className="row">
+                            <div className="col-md-12">
+                                <div className="card">
+                                    <div className="card-header">
+                                        <h4 className="card-title">Liste des missions</h4>
+                                    </div>
+                                    <div className="card-body">
+                                        <div className="table-responsive">
+                                            <table className="table table-striped table-hover mt-3">
+                                                <thead>
+                                                    <tr>
+                                                        <th onClick={() => requestSort('id_mission')}>
+                                                            ID Mission <FontAwesomeIcon icon={getSortIcon('id_mission')} />
+                                                        </th>
+                                                        <th onClick={() => requestSort('libelle_mission')}>
+                                                            Libellé Mission <FontAwesomeIcon icon={getSortIcon('libelle_mission')} />
+                                                        </th>
+                                                        <th onClick={() => requestSort('prixMissionTotal')}>
+                                                            Prix Total <FontAwesomeIcon icon={getSortIcon('prixMissionTotal')} />
+                                                        </th>
+                                                        <th>Actions</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {sortedMissions.map((mission) => (
+                                                        <tr key={mission.id_mission}>
+                                                            <td>{mission.id_mission}</td>
+                                                            <td>{mission.libelle_mission}</td>
+                                                            <td>{mission.prixMissionTotal}</td>
+                                                            <td>
+                                                                <Button variant="link" onClick={() => handleShowModal(mission)}>
+                                                                    <FontAwesomeIcon icon={faInfo} />
+                                                                </Button>
+                                                            </td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                            {missions.length === 0 && <p>No missions found for this division.</p>}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <Footer />
+            </div>
+
+            <Modal show={showModal} onHide={handleCloseModal} size="lg" centered>
+                <Modal.Header closeButton>
+                    <Modal.Title>Détails de la Mission</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    {selectedMission && (
+                        <div>
+                            <p><strong>ID Mission:</strong> {selectedMission.id_mission}</p>
+                            <p><strong>Libellé Mission:</strong> {selectedMission.libelle_mission}</p>
+                            <p><strong>Prix Total:</strong> {selectedMission.prixMissionTotal}</p>
+                          
+                        </div>
+                    )}
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={handleCloseModal}>
+                        Fermer
                     </Button>
                 </Modal.Footer>
             </Modal>
