@@ -96,8 +96,9 @@ const AddMission = () => {
     };
 
     const filteredMissions = missions.filter(mission => 
-        mission.libelle_mission.toLowerCase().includes(searchTerm.toLowerCase())
+        mission?.libelle_mission && mission.libelle_mission.toLowerCase().includes(searchTerm.toLowerCase())
     );
+    
 
     const fetchMissions = async (id) => {
         try {
@@ -160,7 +161,7 @@ const AddMission = () => {
         }
 
         if (id === 'unite') {
-            // Reset related fields when changing unite
+        
             setFormData(prevState => ({
                 ...prevState,
                 quantite: '',

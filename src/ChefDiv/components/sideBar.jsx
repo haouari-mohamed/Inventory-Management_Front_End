@@ -60,6 +60,7 @@ const Sidebar = ({ logo, menuItems = [] }) => (
                         <h4 className="text-section">Components</h4>
                     </li>
                     <SidebarItem href="/afficherAffaireCD" icon="fas fa-list" text="Liste des affaires"/>
+                    <SidebarItem href="/missionAffaire" icon="fas fa-tasks" text="Mission Affaire" />
                 </ul>
                 <ul className="nav">
                     {menuItems.map((item, index) => (
