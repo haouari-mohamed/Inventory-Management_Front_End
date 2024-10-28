@@ -40,6 +40,8 @@ import ProfilePageCP from './ChefPole/profileCP';
 import ProfilePageCD from './ChefDiv/profileCD';
 import ProfilePageCDP from './ChefProjet/profileCDP';
 import AffairesMissionsDivisions from './ChefDiv/missionAffaireCD';
+import AfficherMissionprCD from './ChefDiv/afficherMissionprCD';
+import AssignMissionChefProjetCD from './ChefDiv/assignMissionChefProjetCD';
 
 function LogoutComponent() {
   const { setUser } = useUser();
@@ -47,6 +49,7 @@ function LogoutComponent() {
   React.useEffect(() => {
     setUser(null);
     localStorage.removeItem('userId');
+    localStorage.removeItem('jwt')
   }, [setUser]);
 
   return <Navigate to="/login" />;
@@ -68,10 +71,12 @@ const routes = [
   { path: '/afficherAffaireCP', element: AfficherAffaireCP, title: 'Afficher Affaire - CID' },
   { path: '/afficherMissionCP/:affaireId', element: AfficherMissionCP, title: 'Afficher Mission - CID' }, 
   { path: '/HomeCD', element: HomeCD, title: 'Accueil - CID' },
+  { path: '/assignMissionChefProjetCD/:idMission', element: AssignMissionChefProjetCD, title: 'Assign Mission - CID' },
   { path: '/missionAffaire', element:AffairesMissionsDivisions , title: 'Mission Affaire - CID', public:true },
   { path: '/afficherAffaireCD', element: AfficherAffaireCD, title: 'Afficher Affaire - CID' },
   { path: '/repartirMissionCD/:idMission', element: RepartirMissionCD, title: 'Répartir les Missions - CID' },
   { path: '/afficherMissionCD/:affaireId', element: AfficherMissionCD, title: 'Afficher Mission - CID', public:true },
+  { path: '/afficherMissionpCD/:affaireId', element: AfficherMissionprCD, title: 'Afficher Mission - CID', public:true },
   { path: '/designationChefProjetCD/:idAffaire', element: DesignationChefProjetCD, title: 'Designation de Chef de Projet - CID' },
   { path: '/HomeCDP', element: HomeCDP, title: 'Accueil - CID' },
   { path: '/afficherAffaireCDP', element: AfficherAffaireCDP, title: 'Afficher Affaire - CID' },
@@ -79,8 +84,8 @@ const routes = [
   { path: '/consultMissionCDP/:idMission', element: ConsultMissionCDP, title: 'Consulter Mission - CID' },
   { path: '/afficherUnite', element: AfficherUnite, title: 'Gestion des Unités - CID' },
   { path: '/afficherRole', element: AfficherRole, title: 'Gestion des Roles - CID' },
-  { path: '/afficherUser', element: AfficherUser, title: 'Gestion des Utilisateurs - CID' },
-  { path: '/addUser', element: AddUser, title: 'Gestion des Utilisateurs - CID' },
+  { path: '/afficherUser', element: AfficherUser, title: 'Gestion des Utilisateurs - CID',public:true },
+  { path: '/addUser', element: AddUser, title: 'Gestion des Utilisateurs - CID' ,public:true},
   { path: '/afficherPole', element: AfficherPole, title: 'Gestion des Poles - CID' },
   { path: '/afficherDivision', element: AfficherDivision, title: 'Gestion des Divisions - CID' },
   { path: '/afficherClient', element: AfficherClient, title: 'Gestion des Clients - CID' },

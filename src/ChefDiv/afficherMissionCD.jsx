@@ -242,14 +242,14 @@ import { faInfo, faSort, faSortUp, faSortDown } from '@fortawesome/free-solid-sv
 import Sidebar from './components/sideBar';
 import MainHeader from './components/mainHeader';
 import Footer from './components/footer';
+import { useNavigate } from 'react-router-dom';
+import { faUserPlus } from '@fortawesome/free-solid-svg-icons';
 
-// Configure axios
 axios.defaults.withCredentials = true;
-axios.defaults.timeout = 5000; // 5 seconds timeout
 
 const AfficherMissionCD = () => {
-    // Extract division ID from URL params
-    const { idDivision } = useParams();
+    const navigate = useNavigate();
+    const { affaireId } = useParams();
     const [missions, setMissions] = useState([]);
     const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
     const [showModal, setShowModal] = useState(false);
@@ -258,13 +258,13 @@ const AfficherMissionCD = () => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        const fetchMissionsByDivision = async () => {
+        const fetchAffaireAndMissions = async () => {
             try {
                 setLoading(true);
                 setError(null);
 
                 const userId=localStorage.getItem('userId')
-                const response = await axios.get(`http://localhost:8080/api/missions/missionbydivision/${userId}`);
+                const response = await axios.get(`http://localhost:8080/api/missions/missionbydivisionsc/${userId}/${affaireId}`);
                 setMissions(response.data);
                 setLoading(false);
             } catch (error) {
@@ -280,8 +280,8 @@ const AfficherMissionCD = () => {
             }
         };
 
-        fetchMissionsByDivision();
-    }, [idDivision]);
+        fetchAffaireAndMissions();
+    }, [affaireId]);
 
     const requestSort = (key) => {
         let direction = 'ascending';
@@ -290,6 +290,9 @@ const AfficherMissionCD = () => {
         }
         setSortConfig({ key, direction });
     };
+   const onDesignateChef = (mission) => {
+      navigate(`/assignMissionChefProjetCD/${mission.idMission}`);
+  };
 
     const getSortIcon = (columnName) => {
         if (sortConfig.key === columnName) {
@@ -332,7 +335,7 @@ const AfficherMissionCD = () => {
                 <div className="container">
                     <div className="page-inner">
                         <div className="page-header">
-                            <h3 className="fw-bold mb-3">Missions pour la division: {idDivision}</h3>
+                            <h3 className="fw-bold mb-3">Missions pour l'Affaire: {affaireId}</h3>
                         </div>
                         <div className="row">
                             <div className="col-md-12">
@@ -357,20 +360,27 @@ const AfficherMissionCD = () => {
                                                         <th>Actions</th>
                                                     </tr>
                                                 </thead>
-                                                <tbody>
-                                                    {sortedMissions.map((mission) => (
-                                                        <tr key={mission.id_mission}>
-                                                            <td>{mission.id_mission}</td>
-                                                            <td>{mission.libelle_mission}</td>
-                                                            <td>{mission.prixMissionTotal}</td>
-                                                            <td>
-                                                                <Button variant="link" onClick={() => handleShowModal(mission)}>
-                                                                    <FontAwesomeIcon icon={faInfo} />
-                                                                </Button>
-                                                            </td>
-                                                        </tr>
-                                                    ))}
-                                                </tbody>
+                                                      <tbody>
+                                                        {sortedMissions.map((mission) => (
+                                                            <tr key={mission.idMission}>
+                                                                <td>{mission.idMission}</td>
+                                                                <td>{mission.libelleMission}</td>
+                                                                <td>{mission.partMission}</td>
+                                                                <td>
+                                                                    <Button variant="link" onClick={() => handleShowModal(mission)}>
+                                                                        <FontAwesomeIcon icon={faInfo} />
+                                                                    </Button>
+                                                                    <button 
+                                                                        onClick={() => onDesignateChef(mission)} 
+                                                                        className="btn btn-link btn-primary" 
+                                                                        title="Désigner Chef de Projet"
+                                                                    >
+                                                                        <FontAwesomeIcon icon={faUserPlus} />
+                                                                    </button>
+                                                                </td>
+                                                            </tr>
+                                                        ))}
+                                                    </tbody>
                                             </table>
                                             {missions.length === 0 && <p>No missions found for this division.</p>}
                                         </div>
@@ -390,9 +400,9 @@ const AfficherMissionCD = () => {
                 <Modal.Body>
                     {selectedMission && (
                         <div>
-                            <p><strong>ID Mission:</strong> {selectedMission.id_mission}</p>
-                            <p><strong>Libellé Mission:</strong> {selectedMission.libelle_mission}</p>
-                            <p><strong>Prix Total:</strong> {selectedMission.prixMissionTotal}</p>
+                            <p><strong>ID Mission:</strong> {selectedMission.idMission}</p>
+                            <p><strong>Libellé Mission:</strong> {selectedMission.libelleMission}</p>
+                            <p><strong>Prix Total:</strong> {selectedMission.partMission}</p>
                           
                         </div>
                     )}
