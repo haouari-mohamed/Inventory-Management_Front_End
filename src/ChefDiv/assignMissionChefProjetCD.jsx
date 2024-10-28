@@ -8,42 +8,44 @@ import Sidebar from './components/sideBar';
 import MainHeader from './components/mainHeader';
 import Footer from './components/footer';
 
-const DesignationChefProjetCD = () => {
-    const { idAffaire } = useParams(); // Get the affaire ID from the URL
+const AssignMissionChefProjet = () => {
+    const { idMission } = useParams(); 
     const navigate = useNavigate();
     const [availableChefs, setAvailableChefs] = useState([]);
     const [selectedChef, setSelectedChef] = useState('');
     const [currentChef, setCurrentChef] = useState(null);
     const [showSuccessModal, setShowSuccessModal] = useState(false);
+    const [affaireId, setAffaireId] = useState(null);
 
     useEffect(() => {
         const fetchChefs = async () => {
             try {
-                const userId=localStorage.getItem('userId')
+                const userId = localStorage.getItem('userId');
                 const response = await axios.get(`http://localhost:8080/api/utilisateurs/chefs-de-projet/${userId}`);
-                console.log('Réponse de la désignation:', response.data)
+                console.log('Chefs de Projet response:', response.data);
                 setAvailableChefs(response.data);
             } catch (error) {
                 console.error('Error fetching chefs de projet:', error);
             }
         };
 
-        const fetchAffaire = async () => {
+        const fetchMission = async () => {
             try {
-                const response = await axios.get(`http://localhost:8080/api/affaires/${idAffaire}`);
-                const affaire = response.data;
-                if (affaire.chefProjet) {
-                    setCurrentChef(affaire.chefProjet.id_utilisateur);
-                    setSelectedChef(affaire.chefProjet.id_utilisateur);
+                const response = await axios.get(`http://localhost:8080/api/missions/${idMission}`);
+                const mission = response.data;
+                setAffaireId(mission.affaire.idAffaire);
+                if (mission.chefProjet) {
+                    setCurrentChef(mission.chefProjet.id_utilisateur);
+                    setSelectedChef(mission.chefProjet.id_utilisateur);
                 }
             } catch (error) {
-                console.error('Error fetching affaire:', error);
+                console.error('Error fetching mission:', error);
             }
         };
 
         fetchChefs();
-        fetchAffaire();
-    }, [idAffaire]);
+        fetchMission();
+    }, [idMission]);
 
     const handleChefChange = (e) => {
         setSelectedChef(e.target.value);
@@ -52,11 +54,16 @@ const DesignationChefProjetCD = () => {
     const handleApply = async () => {
         if (selectedChef) {
             try {
-                await axios.put(`http://localhost:8080/api/affaires/${idAffaire}/chef-projet`, { chefProjetId: selectedChef });
+                console.log('chef de projet selected',selectedChef)
+                await axios.post(`http://localhost:8080/api/mission/chefprojet`, { 
+                    mission: { id_mission: idMission }, 
+                    chefProjet: { id_utilisateur: selectedChef }
+                });
+              
                 setShowSuccessModal(true);
-                console.log('Chef de Projet designated successfully');
+                console.log('Chef de Projet assigned to mission successfully');
             } catch (error) {
-                console.error('Error designating Chef de Projet:', error);
+                console.error('Error assigning Chef de Projet to mission:', error);
             }
         } else {
             console.log('Please select a Chef de Projet');
@@ -65,7 +72,7 @@ const DesignationChefProjetCD = () => {
 
     const handleCloseSuccessModal = () => {
         setShowSuccessModal(false);
-        navigate('/afficherAffaireCD');
+        navigate(`/afficherMissionCD/${affaireId}`);
     };
 
     return (
@@ -87,7 +94,7 @@ const DesignationChefProjetCD = () => {
                                     <i className="icon-arrow-right" />
                                 </li>
                                 <li className="nav-item">
-                                    <a href="#">Gestion des Affaires</a>
+                                    <a href="#">Gestion des Missions</a>
                                 </li>
                                 <li className="separator">
                                     <i className="icon-arrow-right" />
@@ -102,7 +109,7 @@ const DesignationChefProjetCD = () => {
                                 <div className="card">
                                     <div className="card-header">
                                         <div className="card-title" style={{ textAlign: 'left' }}>
-                                            Sélectionner le Chef de Projet pour l'affaire "{idAffaire}"
+                                            Sélectionner le Chef de Projet pour la mission "{idMission}"
                                         </div>
                                     </div>
                                     <div className="card-body">
@@ -142,7 +149,7 @@ const DesignationChefProjetCD = () => {
                 </Modal.Header>
                 <Modal.Body className="text-center">
                     <FaCheckCircle size={50} color="green" />
-                    <p className="mt-3">Chef de Projet désigné avec succès!</p>
+                    <p className="mt-3">Chef de Projet désigné avec succès pour la mission!</p>
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="primary" onClick={handleCloseSuccessModal}>
@@ -154,4 +161,4 @@ const DesignationChefProjetCD = () => {
     );
 };
 
-export default DesignationChefProjetCD;
+export default AssignMissionChefProjet;

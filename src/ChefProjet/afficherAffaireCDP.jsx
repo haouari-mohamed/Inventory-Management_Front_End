@@ -52,6 +52,7 @@ const AfficherAffaire = () => {
         if (!userDivision) return;
 
         try {
+            const userId=localStorage.getItem('userId')
             const response = await axios.get('http://localhost:8080/api/affaires');
             const filteredAffaires = response.data.filter(affaire => 
                 affaire.divisionPrincipale.id_division === userDivision.id_division
