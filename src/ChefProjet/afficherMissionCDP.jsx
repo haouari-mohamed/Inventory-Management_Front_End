@@ -96,9 +96,9 @@ const AfficherMissionCD = () => {
 
     const handleCloseModal = () => setShowModal(false);
 
-    const avancement = (idMission) => {
-        console.log('Navigating to avancement for mission ID:', idMission);
-        navigate(`/avancementCDP/${idMission}`);
+    const avancement = (id_mission) => {
+        console.log('Navigating to avancement for mission ID:', id_mission);
+        navigate(`/avancementCDP/${id_mission}`);
     };
 
     if (loading) return <div>Loading...</div>;
@@ -147,7 +147,7 @@ const AfficherMissionCD = () => {
                                                 </thead>
                                                 <tbody>
                                                     {sortedMissions.map((mission) => (
-                                                        <tr key={mission.idMission}>
+                                                        <tr key={mission.id_mission}>
                                                             <td>{mission.id_mission}</td> 
                                                             <td>{mission.libelle_mission}</td>
                                                             <td>{mission.partMission}</td>
