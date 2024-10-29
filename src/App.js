@@ -42,6 +42,8 @@ import ProfilePageCDP from './ChefProjet/profileCDP';
 import AffairesMissionsDivisions from './ChefDiv/missionAffaireCD';
 import AfficherMissionprCD from './ChefDiv/afficherMissionprCD';
 import AssignMissionChefProjetCD from './ChefDiv/assignMissionChefProjetCD';
+import AfficherMissionCDPC from './ChefProjet/afficherMissionCDPC';
+import detailsMissionPartSecondaire from './ChefProjet/detailsMissionPartSecondaire';
 
 function LogoutComponent() {
   const { setUser } = useUser();
@@ -81,6 +83,8 @@ const routes = [
   { path: '/HomeCDP', element: HomeCDP, title: 'Accueil - CID' },
   { path: '/afficherAffaireCDP', element: AfficherAffaireCDP, title: 'Afficher Affaire - CID' },
   { path: '/afficherMissionCDP/:idAffaire', element: AfficherMissionCDP, title: 'Afficher Mission - CID' },
+  { path: '/afficherMissionCDPC/:idAffaire', element: AfficherMissionCDPC, title: 'Afficher Mission - CID' },
+  { path: '/detailsmissionpsc/:id', element: detailsMissionPartSecondaire, title: 'Afficher Details Mission - CID' ,public:true},
   { path: '/consultMissionCDP/:idMission', element: ConsultMissionCDP, title: 'Consulter Mission - CID' },
   { path: '/afficherUnite', element: AfficherUnite, title: 'Gestion des Unités - CID' },
   { path: '/afficherRole', element: AfficherRole, title: 'Gestion des Roles - CID' },

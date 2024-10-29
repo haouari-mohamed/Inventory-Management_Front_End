@@ -28,8 +28,7 @@ const AfficherMissionprCD = () => {
            try {
                setLoading(true);
                setError(null);
-               const userId = localStorage.getItem('userId');
-               const missionsResponse = await axios.get(`http://localhost:8080/api/missions/missionbydivisionpr/${userId}/${affaireId}`);
+               const missionsResponse = await axios.get(`http://localhost:8080/api/missions/missionbydivisionpr/${affaireId}`);
                setMissions(missionsResponse.data);
            } catch (error) {
                console.error('Error fetching data:', error);
