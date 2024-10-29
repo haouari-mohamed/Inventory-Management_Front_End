@@ -96,7 +96,7 @@ const AfficherMissionCDPC = () => {
     const handleCloseModal = () => setShowModal(false);
 
     const handleConsultMission = (missionId) => {
-        navigate(`/consultMissionCDP/${missionId}`);
+        navigate(`/avancementCDP/${missionId}`);
     };
 
     if (loading) return <div>Loading...</div>;
