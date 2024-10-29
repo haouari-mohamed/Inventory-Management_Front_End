@@ -1,7 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable jsx-a11y/img-redundant-alt */
-/* eslint-disable no-script-url */
-/* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
@@ -31,11 +27,17 @@ const AfficherMissionCD = () => {
             try {
                 setLoading(true);
                 setError(null);
+
                 const affaireResponse = await axios.get(`http://localhost:8080/api/affaires/${idAffaire}`);
                 setAffaire(affaireResponse.data);
                 const userId=localStorage.getItem("userId")
                 const missionsResponse = await axios.get(`http://localhost:8080/api/missions/missionchefprojet/${userId}/${idAffaire}`);
                 setMissions(missionsResponse.data);
+                
+                // Log fetched mission IDs for debugging
+                missionsResponse.data.forEach(mission => {
+                    console.log('Fetched Mission ID-------->:', mission.id_mission);
+                });
 
                 setLoading(false);
             } catch (error) {
@@ -50,8 +52,9 @@ const AfficherMissionCD = () => {
                 setLoading(false);
             }
         };
-
+        
         fetchAffaireAndMissions();
+        
     }, [idAffaire]);
 
     const requestSort = (key) => {
@@ -87,13 +90,15 @@ const AfficherMissionCD = () => {
 
     const handleShowModal = (mission) => {
         setSelectedMission(mission);
+        console.log('Selected Mission:', mission); 
         setShowModal(true);
     };
 
     const handleCloseModal = () => setShowModal(false);
 
-    const handleConsultMission = (missionId) => {
-        navigate(`/consultMissionCDP/${missionId}`);
+    const avancement = (id_mission) => {
+        console.log('Navigating to avancement for mission ID:', id_mission);
+        navigate(`/avancementCDP/${id_mission}`);
     };
 
     if (loading) return <div>Loading...</div>;
@@ -143,7 +148,7 @@ const AfficherMissionCD = () => {
                                                 <tbody>
                                                     {sortedMissions.map((mission) => (
                                                         <tr key={mission.id_mission}>
-                                                            <td>{mission.id_mission}</td>
+                                                            <td>{mission.id_mission}</td> 
                                                             <td>{mission.libelle_mission}</td>
                                                             <td>{mission.partMission}</td>
                                                             <td>{mission.dateDebut}</td>
@@ -152,7 +157,7 @@ const AfficherMissionCD = () => {
                                                                 <Button variant="link" onClick={() => handleShowModal(mission)}>
                                                                     <FontAwesomeIcon icon={faInfo} />
                                                                 </Button>
-                                                                <Button variant="link" onClick={() => handleConsultMission(mission.id_mission)}>
+                                                                <Button variant="link" onClick={() => avancement(mission.id_mission)}>
                                                                     <FontAwesomeIcon icon={faEye} />
                                                                 </Button>
                                                             </td>
@@ -178,7 +183,7 @@ const AfficherMissionCD = () => {
                 <Modal.Body>
                     {selectedMission && (
                         <div>
-                            <p><strong>ID Mission:</strong> {selectedMission.id_mission}</p>
+                            <p><strong>ID Mission:</strong> {selectedMission.idMission}</p>
                             <p><strong>Libellé Mission:</strong> {selectedMission.libelle_mission}</p>
                             <p><strong>Prix Total:</strong> {selectedMission.prixMissionTotal}</p>
                             <p><strong>Prix Unitaire:</strong> {selectedMission.prixMissionUnitaire}</p>
@@ -203,23 +208,15 @@ const AfficherMissionCD = () => {
                             </ul>
                             <p><strong>Sous-traitants:</strong></p>
                             <ul>
-                                {selectedMission.sousTraitants?.map((missionST, index) => (
-                                    <li key={index}>{missionST.sousTraitant?.nom_st} - {missionST.pourcentage}%</li>
-                                ))}
-                            </ul>
-                            <p><strong>Partenaires:</strong></p>
-                            <ul>
-                                {selectedMission.partenaires?.map((missionPartenaire, index) => (
-                                    <li key={index}>{missionPartenaire.partenariat?.nom_partenariat} - {missionPartenaire.pourcentage}%</li>
+                                {selectedMission.subcontractors?.map((sousTraitant, index) => (
+                                    <li key={index}>{sousTraitant.nom}</li>
                                 ))}
                             </ul>
                         </div>
                     )}
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={handleCloseModal}>
-                        Fermer
-                    </Button>
+                    <Button variant="secondary" onClick={handleCloseModal}>Fermer</Button>
                 </Modal.Footer>
             </Modal>
         </div>

@@ -7,7 +7,7 @@ const AuthGuard = ({ children }) => {
   const token = localStorage.getItem('jwt');
   
   if (!token) {
-    // Redirect to login if there's no token
+    
     localStorage.removeItem('jwt');
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
@@ -16,14 +16,14 @@ const AuthGuard = ({ children }) => {
     const userRole = DecodeJwtService.getRoleFromToken(token);
     const currentPath = location.pathname;
     
-    // Check if user is authorized to access this path
+   
     if (!isAuthorized(currentPath, userRole)) {
-      // Redirect to appropriate home page based on role
+    
       const homePage = getHomePageForRole(userRole);
       return <Navigate to={homePage} replace />;
     }
 
-    // User is authorized, render the protected component
+   
     return children;
   } catch (error) {
     console.error('Token validation error:', error);
@@ -77,7 +77,8 @@ const isAuthorized = (path, role) => {
     case 'CHEF_PROJET':
       if (path.includes('CDP') || 
           path === '/HomeCDP' || 
-          path === '/profileCDP') {
+          path === '/profileCDP'||
+          path == '/avancement' ){
         return true;
       }
       break;
