@@ -280,6 +280,7 @@ const AfficherAffaire = () => {
                                                                     item={item} 
                                                                     onShowInfo={handleShowInfo} 
                                                                     onDesignateChef={handleDesignateChef}
+                                                                    isPrimaryDivision={true}
                                                                 />
                                                             ))}
                                                     </tbody>
