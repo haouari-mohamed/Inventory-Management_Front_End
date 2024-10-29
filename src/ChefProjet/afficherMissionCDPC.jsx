@@ -7,7 +7,7 @@ import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Modal, Button } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faInfo, faSort, faSortUp, faSortDown, faEye } from '@fortawesome/free-solid-svg-icons';
+import { faInfo, faSort, faSortUp, faSortDown, faEye,faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import Sidebar from './components/sideBar';
 import MainHeader from './components/mainHeader';
 import Footer from './components/footer';
@@ -15,7 +15,7 @@ import Footer from './components/footer';
 
 axios.defaults.withCredentials = true;
 
-const AfficherMissionCD = () => {
+const AfficherMissionCDPC = () => {
     const navigate = useNavigate();
     const { idAffaire } = useParams();
     const [missions, setMissions] = useState([]);
@@ -33,8 +33,7 @@ const AfficherMissionCD = () => {
                 setError(null);
                 const affaireResponse = await axios.get(`http://localhost:8080/api/affaires/${idAffaire}`);
                 setAffaire(affaireResponse.data);
-                const userId=localStorage.getItem("userId")
-                const missionsResponse = await axios.get(`http://localhost:8080/api/missions/missionchefprojet/${userId}/${idAffaire}`);
+                const missionsResponse = await axios.get(`http://localhost:8080/api/missions/missionbydivisionpr/${idAffaire}`);
                 setMissions(missionsResponse.data);
 
                 setLoading(false);
@@ -69,6 +68,10 @@ const AfficherMissionCD = () => {
         return faSort;
     };
 
+    const handleNavigateToNewRoute = (missionId) => {
+      navigate(`/detailsmissionpsc/${missionId}`);
+  };
+  
     const sortedMissions = useMemo(() => {
         let sortableMissions = [...missions];
         if (sortConfig.key !== null) {
@@ -131,11 +134,8 @@ const AfficherMissionCD = () => {
                                                         <th onClick={() => requestSort('prixMissionTotal')}>
                                                             Prix Total <FontAwesomeIcon icon={getSortIcon('prixMissionTotal')} />
                                                         </th>
-                                                        <th onClick={() => requestSort('dateDebut')}>
-                                                            Date Debut <FontAwesomeIcon icon={getSortIcon('dateDebut')} />
-                                                        </th>
-                                                        <th onClick={() => requestSort('dateFin')}>
-                                                            Date Fin <FontAwesomeIcon icon={getSortIcon('dateFin')} />
+                                                        <th onClick={() => requestSort('principalDivision.nom_division')}>
+                                                            Division Principale <FontAwesomeIcon icon={getSortIcon('principalDivision.nom_division')} />
                                                         </th>
                                                         <th>Actions</th>
                                                     </tr>
@@ -145,15 +145,17 @@ const AfficherMissionCD = () => {
                                                         <tr key={mission.id_mission}>
                                                             <td>{mission.id_mission}</td>
                                                             <td>{mission.libelle_mission}</td>
-                                                            <td>{mission.partMission}</td>
-                                                            <td>{mission.dateDebut}</td>
-                                                            <td>{mission.dateFin}</td>
+                                                            <td>{mission.prixMissionTotal}</td>
+                                                            <td>{mission.principalDivision?.nom_division}</td>
                                                             <td>
                                                                 <Button variant="link" onClick={() => handleShowModal(mission)}>
                                                                     <FontAwesomeIcon icon={faInfo} />
                                                                 </Button>
                                                                 <Button variant="link" onClick={() => handleConsultMission(mission.id_mission)}>
                                                                     <FontAwesomeIcon icon={faEye} />
+                                                                </Button>
+                                                                <Button variant="link" onClick={() => handleNavigateToNewRoute(mission.id_mission)}>
+                                                                     <FontAwesomeIcon icon={faArrowRight} />
                                                                 </Button>
                                                             </td>
                                                         </tr>
@@ -226,4 +228,4 @@ const AfficherMissionCD = () => {
     );
 };
 
-export default AfficherMissionCD;
+export default AfficherMissionCDPC;
