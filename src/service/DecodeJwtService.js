@@ -9,26 +9,43 @@ class DecodeJwtService {
         }
     }
 
-    decodeToken(token) {
-        return jwtDecode(token);
-       
+    decodeToken(token = this.token) {
+        if (!token || typeof token !== 'string') {
+            console.error('Invalid token format:', token);
+            return null; // Return null if the token is invalid
+        }
+
+        try {
+            return jwtDecode(token);
+        } catch (error) {
+            console.error('Error decoding token:', error);
+            return null;
+        }
     }
 
-    getUsernameFromToken(token) {
+    getUsernameFromToken(token = this.token) {
         const decodedToken = this.decodeToken(token);
-        return decodedToken.sub; 
-       
+        return decodedToken ? decodedToken.sub : null; // Return null if decoding fails
     }
 
-    getRoleFromToken(token) {
+    getRoleFromToken(token = this.token) {
         const decodedToken = this.decodeToken(token);
-        return decodedToken.roles;
+        return decodedToken ? decodedToken.roles : null;
     }
 
-    async getIdByUsername(token) {
+    async getIdByUsername(token = this.token) {
         const username = this.getUsernameFromToken(token);
-        const response = await axios.get(`http://localhost:8080/api/utilisateurs/find/utilisateur/${username}`);
-        return response.data;
+        if (!username) {
+            throw new Error('Username could not be retrieved from token');
+        }
+
+        try {
+            const response = await axios.get(`http://localhost:8080/api/utilisateurs/find/utilisateur/${username}`);
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching user by username:', error);
+            throw error; // Re-throw to handle it in the caller function
+        }
     }
 }
 

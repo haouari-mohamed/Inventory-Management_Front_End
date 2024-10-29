@@ -40,6 +40,10 @@ import ProfilePageCP from './ChefPole/profileCP';
 import ProfilePageCD from './ChefDiv/profileCD';
 import ProfilePageCDP from './ChefProjet/profileCDP';
 import AffairesMissionsDivisions from './ChefDiv/missionAffaireCD';
+import AvancementCDP from './ChefProjet/avancementCDP';
+import Test from './ChefProjet/components/test';
+
+
 
 function LogoutComponent() {
   const { setUser } = useUser();
@@ -58,6 +62,8 @@ function RootRedirect() {
 
 const routes = [
 
+  { path: '/test', element: Test, title: 'Test', public: true },
+
   { path: '/login', element: Login, title: 'Login', public: true },
   { path: '/HomeCA', element: HomeCA, title: 'Accueil - CID', public: false },
   { path: '/addAffaireCA', element: AddAffaireCA, title: 'Ajouter Affaire - CID' },
@@ -74,6 +80,14 @@ const routes = [
   { path: '/afficherMissionCD/:idAffaire', element: AfficherMissionCD, title: 'Afficher Mission - CID' },
   { path: '/designationChefProjetCD/:idAffaire', element: DesignationChefProjetCD, title: 'Designation de Chef de Projet - CID' },
   { path: '/HomeCDP', element: HomeCDP, title: 'Accueil - CID' },
+
+  { path: '/avancementCDP/:id_mission', element: AvancementCDP, title: 'Avancement - CID', public: true },
+
+  /* { path: '/avancementCDP', element: AvancementCDP, title: 'Avancement - CID',public:true }, */
+
+
+
+
   { path: '/afficherAffaireCDP', element: AfficherAffaireCDP, title: 'Afficher Affaire - CID' },
   { path: '/afficherMissionCDP/:idAffaire', element: AfficherMissionCDP, title: 'Afficher Mission - CID' },
   { path: '/consultMissionCDP/:idMission', element: ConsultMissionCDP, title: 'Consulter Mission - CID' },
@@ -123,6 +137,7 @@ function App() {
               ))}
               <Route path="/" element={<RootRedirect />} />
               <Route path="*" element={<Navigate to="/login" replace />} />
+              
 
             </Routes>
           </Router>

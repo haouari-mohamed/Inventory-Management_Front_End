@@ -60,6 +60,9 @@ const Sidebar = ({ logo, menuItems = [] }) => (
                         <h4 className="text-section">Components</h4>
                     </li>
                     <SidebarItem href="/afficherAffaireCDP" icon="fas fa-layer-group" text="Liste des affaires" />
+                    {/* Add Avancement CDP item */}
+                    <SidebarItem href="/avancementCDP" icon="fas fa-tasks" text="Avancement CDP" />
+
                 </ul>
                 <ul className="nav">
                     {menuItems.map((item, index) => (
