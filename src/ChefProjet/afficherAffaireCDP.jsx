@@ -1,7 +1,4 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable jsx-a11y/img-redundant-alt */
-/* eslint-disable no-script-url */
-/* eslint-disable jsx-a11y/anchor-is-valid */
+
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -12,23 +9,25 @@ import Sidebar from './components/sideBar';
 import MainHeader from './components/mainHeader';
 import Footer from './components/footer';
 
-const TableRow = ({ item, onShowInfo }) => (
+ const TableRow = ({ item, onShowInfo }) => (
     <tr>
         <td>{item.idAffaire}</td>
         <td>{item.libelle_affaire}</td>
         <td>{item.statusAffaire}</td>
         <td>{item.client.nom_client}</td>
         <td>
-            <button onClick={() => onShowInfo(item)} className="btn btn-link btn-primary" title="Informations">
+            <button onClick={() => onShowInfo(item)} className="btn btn-link btn-primary me-2" title="Informations">
                 <FontAwesomeIcon icon={faInfo} />
             </button>
         </td>
     </tr>
-);
+); 
+ 
 
 const AfficherAffaire = () => {
     const navigate = useNavigate();
     const [affaires, setAffaires] = useState([]);
+    const [affairesSecondaires, setAffairesSecondaires] = useState([]); // Nouvel état pour les affaires secondaires
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
@@ -52,16 +51,35 @@ const AfficherAffaire = () => {
         if (!userDivision) return;
 
         try {
-            const response = await axios.get('http://localhost:8080/api/affaires');
-            const filteredAffaires = response.data.filter(affaire => 
-                affaire.divisionPrincipale.id_division === userDivision.id_division
-            );
+            const userId = localStorage.getItem('userId');
+            const response = await axios.get(`http://localhost:8080/api/affaires/affairechefprojetpr/${userId}`);
+            console.log('Affaires data:', response.data);
+
+            const filteredAffaires = response.data.filter(affaire => {
+                const isDivisionPrincipale = affaire.divisionPrincipale && affaire.divisionPrincipale.id_division === userDivision.id_division;
+                const isDivisionSecondaire = affaire.divisionSecondaire && affaire.divisionSecondaire.id_division === userDivision.id_division;
+                return isDivisionPrincipale || isDivisionSecondaire;
+            });
+
             setAffaires(filteredAffaires);
             setLoading(false);
         } catch (error) {
             console.error('Error fetching affaires:', error);
             setError('Failed to fetch affaires');
             setLoading(false);
+        }
+    }, [userDivision]);
+
+    const fetchAffairesSecondaires = useCallback(async () => {
+        if (!userDivision) return;
+
+        try {
+            const userId = localStorage.getItem('userId');
+            const response = await axios.get(`http://localhost:8080/api/affaires/affairechefprojet/${userId}`);
+            setAffairesSecondaires(response.data);
+        } catch (error) {
+            console.error('Error fetching secondary affaires:', error);
+            setError('Failed to fetch secondary affaires');
         }
     }, [userDivision]);
 
@@ -72,11 +90,29 @@ const AfficherAffaire = () => {
     useEffect(() => {
         if (userDivision) {
             fetchAffaires();
+            fetchAffairesSecondaires();
         }
-    }, [userDivision, fetchAffaires]);
+    }, [userDivision, fetchAffaires, fetchAffairesSecondaires]);
 
+  
     const handleSearch = (term) => {
         setSearchTerm(term);
+    };
+
+ 
+    const handleShowInfo = (affaire) => {
+        setSelectedAffaire(affaire);
+        setShowModal(true);
+    };
+
+ 
+  /*   const handleDesignateChef = (affaire) => {
+        navigate(`/designationChefProjetCD/${affaire.idAffaire}`);
+    };
+ */
+    const handleCloseModal = () => {
+        setShowModal(false);
+        setSelectedAffaire(null);
     };
 
     const requestSort = (key) => {
@@ -87,16 +123,18 @@ const AfficherAffaire = () => {
         setSortConfig({ key, direction });
     };
 
-    const filteredAffaires = useMemo(() => {
-        return affaires.filter(affaire =>
-            affaire.libelle_affaire.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            affaire.client.nom_client.toLowerCase().includes(searchTerm.toLowerCase())
-        );
-    }, [affaires, searchTerm]);
+    const getSortIcon = (key) => {
+        if (!sortConfig.key) {
+            return faSort;
+        }
+        return sortConfig.key === key
+            ? (sortConfig.direction === 'ascending' ? faSortUp : faSortDown)
+            : faSort;
+    };
 
     const sortedData = useMemo(() => {
-        let sortableItems = [...filteredAffaires];
-        if (sortConfig.key !== null) {
+        let sortableItems = [...affaires];
+        if (sortConfig.key) {
             sortableItems.sort((a, b) => {
                 if (a[sortConfig.key] < b[sortConfig.key]) {
                     return sortConfig.direction === 'ascending' ? -1 : 1;
@@ -108,34 +146,25 @@ const AfficherAffaire = () => {
             });
         }
         return sortableItems;
-    }, [filteredAffaires, sortConfig]);
+    }, [affaires, sortConfig]);
 
-    const getSortIcon = (columnName) => {
-        if (sortConfig.key === columnName) {
-            return sortConfig.direction === 'ascending' ? faSortUp : faSortDown;
-        }
-        return faSort;
-    };
-
-    const handleShowInfo = (affaire) => {
-        setSelectedAffaire(affaire);
-        setShowModal(true);
-    };
-
-    const handleDesignateChef = (affaire) => {
-        // Navigate to the chef de projet designation page with the affaire ID
-        navigate(`/designationChefProjetCD/${affaire.idAffaire}`);
-    };
-
-    const handleCloseModal = () => {
-        setShowModal(false);
-        setSelectedAffaire(null);
-    };
-
-    const handleShowMissions = (affaireId) => {
-        navigate(`/afficherMissionCDP/${affaireId}`);
-        handleCloseModal();
-    };
+    
+        const handleShowMissions = (affaireId) => {
+            if (selectedAffaire) {
+                const userId=localStorage.getItem("userId")
+                if (selectedAffaire.chefProjet.id_utilisateur == userId) {
+                    navigate(`/afficherMissionCDPC/${affaireId}`);
+                } else {
+                    console.log("selected affaire id chef projet",selectedAffaire.chefProjet.id_utilisateur)
+                    console.log("user id",userId)
+                    console.log("affaireId",affaireId)
+                    navigate(`/afficherMissionCDP/${affaireId}`);
+                }
+                handleCloseModal();
+            }
+        };
+        
+    
 
     return (
         <div className="wrapper">
@@ -147,13 +176,13 @@ const AfficherAffaire = () => {
                         <div className="page-header">
                             <h3 className="fw-bold mb-3">Gestion des Affaires</h3>
                         </div>
+
+                   
                         <div className="row">
                             <div className="col-md-12">
                                 <div className="card">
                                     <div className="card-header">
-                                        <div className="d-flex align-items-center">
-                                            <h4 className="card-title">Liste des affaires de la division {userDivision?.nom_division}</h4>
-                                        </div>
+                                        <h4 className="card-title">Affaires en tant que Chef projet Secondaire {userDivision?.nom_division}</h4>
                                     </div>
                                     <div className="card-body">
                                         <div className="table-responsive">
@@ -165,27 +194,19 @@ const AfficherAffaire = () => {
                                                 <table className="table table-striped table-hover mt-3">
                                                     <thead>
                                                         <tr>
-                                                            <th onClick={() => requestSort('idAffaire')}>
-                                                                ID Affaire <FontAwesomeIcon icon={getSortIcon('idAffaire')} />
-                                                            </th>
-                                                            <th onClick={() => requestSort('libelle_affaire')}>
-                                                                Libellé Affaire <FontAwesomeIcon icon={getSortIcon('libelle_affaire')} />
-                                                            </th>
-                                                            <th onClick={() => requestSort('statusAffaire')}>
-                                                                Status <FontAwesomeIcon icon={getSortIcon('statusAffaire')} />
-                                                            </th>
-                                                            <th onClick={() => requestSort('client.nom_client')}>
-                                                                Client <FontAwesomeIcon icon={getSortIcon('client.nom_client')} />
-                                                            </th>
-                                                            <th>Actions</th>
+                                                            <th>ID Affaire</th>
+                                                            <th>Libellé Affaire</th>
+                                                            <th>Status</th>
+                                                            <th>Client</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        {sortedData.map((item) => (
+                                                        {affairesSecondaires.map((item) => (
                                                             <TableRow 
                                                                 key={item.idAffaire} 
                                                                 item={item} 
-                                                                onShowInfo={handleShowInfo}
+                                                                onShowInfo={handleShowInfo} 
+                                    
                                                             />
                                                         ))}
                                                     </tbody>
@@ -196,51 +217,87 @@ const AfficherAffaire = () => {
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <Footer />
-                </div>
-            </div>
 
-            <Modal show={showModal} onHide={handleCloseModal} size="lg">
-                <Modal.Header closeButton>
-                    <Modal.Title>Détails de l'Affaire</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    {selectedAffaire && (
-                        <div>
-                            <p><strong>ID Affaire:</strong> {selectedAffaire.idAffaire}</p>
-                            <p><strong>Libellé Affaire:</strong> {selectedAffaire.libelle_affaire}</p>
-                            <p><strong>Prix Global:</strong> {selectedAffaire.prixGlobal} DH</p>
-                            <p><strong>Status:</strong> {selectedAffaire.statusAffaire}</p>
-                            <p><strong>Numéro de Marché:</strong> {selectedAffaire.marche}</p>
-                            <p><strong>Date de Début:</strong> {new Date(selectedAffaire.dateDebut).toLocaleDateString()}</p>
-                            <p><strong>Date de Fin:</strong> {new Date(selectedAffaire.dateFin).toLocaleDateString()}</p>
-                            {selectedAffaire.dateArret && (
-                                <p><strong>Date d'Arrêt:</strong> {new Date(selectedAffaire.dateArret).toLocaleDateString()}</p>
-                            )}
-                            {selectedAffaire.dateRecommencement && (
-                                <p><strong>Date de Recommencement:</strong> {new Date(selectedAffaire.dateRecommencement).toLocaleDateString()}</p>
-                            )}
-                            <p><strong>Client:</strong> {selectedAffaire.client.nom_client}</p>
-                            <p><strong>Pôle Principal:</strong> {selectedAffaire.polePrincipale.libelle_pole}</p>
-                            <p><strong>Division Principale:</strong> {selectedAffaire.divisionPrincipale.nom_division}</p>
-                            <p><strong>Part CID:</strong> {selectedAffaire.partCID} DH</p>
+                        <div className="row">
+                            <div className="col-md-12">
+                                <div className="card">
+                                    <div className="card-header">
+                                        <h4 className="card-title">Liste des affaires en tant que Chef projet Principale {userDivision?.nom_division}</h4>
+                                    </div>
+                                    <div className="card-body">
+                                        <div className="table-responsive">
+                                            {loading ? (
+                                                <p>Loading...</p>
+                                            ) : error ? (
+                                                <p>{error}</p>
+                                            ) : (
+                                                <table className="table table-striped table-hover mt-3">
+                                                    <thead>
+                                                        <tr>
+                                                            <th onClick={() => requestSort('idAffaire')} style={{ cursor: 'pointer' }}>
+                                                                ID Affaire <FontAwesomeIcon icon={getSortIcon('idAffaire')} />
+                                                            </th>
+                                                            <th onClick={() => requestSort('libelle_affaire')} style={{ cursor: 'pointer' }}>
+                                                                Libellé Affaire <FontAwesomeIcon icon={getSortIcon('libelle_affaire')} />
+                                                            </th>
+                                                            <th onClick={() => requestSort('statusAffaire')} style={{ cursor: 'pointer' }}>
+                                                                Status <FontAwesomeIcon icon={getSortIcon('statusAffaire')} />
+                                                            </th>
+                                                            <th>Client</th>
+                                                            <th>Actions</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {sortedData
+                                                            .filter(item => item.libelle_affaire.toLowerCase().includes(searchTerm.toLowerCase()))
+                                                            .map((item) => (
+                                                                <TableRow 
+                                                                    key={item.idAffaire} 
+                                                                    item={item} 
+                                                                    onShowInfo={handleShowInfo} 
+                                                                   /*  onDesignateChef={handleDesignateChef} */
+                                                                />
+                                                            ))}
+                                                    </tbody>
+                                                </table>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                    )}
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={handleCloseModal}>
-                        Fermer
-                    </Button>
-                    <Button 
-                        variant="primary" 
-                        onClick={() => handleShowMissions(selectedAffaire.idAffaire)}
-                    >
-                        <FontAwesomeIcon icon={faTasks} className="me-2" />
-                        Afficher Missions
-                    </Button>
-                </Modal.Footer>
-            </Modal>
+
+                        <Modal show={showModal} onHide={handleCloseModal} size="lg">
+                            <Modal.Header closeButton>
+                                <Modal.Title>Détails de l'Affaire</Modal.Title>
+                            </Modal.Header>
+                            <Modal.Body>
+                                {selectedAffaire && (
+                                    <div>
+                                        <h5>Libellé : {selectedAffaire.libelle_affaire}</h5>
+                                        <p>Status : {selectedAffaire.statusAffaire}</p>
+                                        <p>Client : {selectedAffaire.client.nom_client}</p>
+                                    
+                                    </div>
+                                )}
+                            </Modal.Body>
+                            <Modal.Footer>
+                                <Button variant="secondary" onClick={handleCloseModal}>
+                                    Fermer
+                                </Button>
+                                <Button 
+                                    variant="primary" 
+                                     onClick={() => handleShowMissions(selectedAffaire.idAffaire)}
+                                >
+                                    <FontAwesomeIcon icon={faTasks} className="me-2" />
+                                    Afficher Missions
+                                </Button>
+                            </Modal.Footer>
+                        </Modal>
+                    </div>
+                </div>
+                <Footer />
+            </div>
         </div>
     );
 };
