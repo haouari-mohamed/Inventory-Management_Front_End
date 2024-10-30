@@ -45,6 +45,9 @@ function Login() {
                 if (role== ('CHEF_PROJET')){
                     navigate('/HomeCDP')
                 }
+                if (role== ('DAF')){
+                    navigate('/afficherAffaireDA')
+                }
 
             } else {
                 console.log("by by");
