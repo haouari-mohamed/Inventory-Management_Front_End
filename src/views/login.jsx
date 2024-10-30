@@ -48,6 +48,9 @@ function Login() {
                 if (role== ('DAF')){
                     navigate('/afficherAffaireDA')
                 }
+                if (role== ('RECOUVREMENT')){
+                    navigate('/afficherFacturationRE')
+                }
 
             } else {
                 console.log("by by");
