@@ -46,6 +46,10 @@ import AfficherMissionprCD from './ChefDiv/afficherMissionprCD';
 import AssignMissionChefProjetCD from './ChefDiv/assignMissionChefProjetCD';
 import AfficherMissionCDPC from './ChefProjet/afficherMissionCDPC';
 import detailsMissionPartSecondaire from './ChefProjet/detailsMissionPartSecondaire';
+import AfficherAffaire from './Daf/afficherAffaire';
+import AfficherAffaireDA from './Daf/afficherAffaire';
+import AfficherMissionDA from './Daf/afficherMission';
+import FacturationManager from './Daf/facturation';
 
 
 function LogoutComponent() {
@@ -90,6 +94,9 @@ const routes = [
   { path: '/avancementCDP/:id_mission', element: AvancementCDP, title: 'Avancement - CID', public: true },
 
   /* { path: '/avancementCDP', element: AvancementCDP, title: 'Avancement - CID',public:true }, */
+  { path: '/afficherAffaireDA', element: AfficherAffaireDA, title: 'Afficher affaires DAF - CID',public:true },
+  { path: '/afficherMissionDA/:idAffaire', element: AfficherMissionDA, title: 'Afficher mission DAF - CID',public:true },
+  { path: '/afficherFacturationDA/:idMission', element: FacturationManager, title: 'Afficher mission DAF - CID',public:true },
 
 
 
