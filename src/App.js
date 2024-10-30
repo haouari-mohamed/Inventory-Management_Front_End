@@ -50,6 +50,8 @@ import AfficherAffaire from './Daf/afficherAffaire';
 import AfficherAffaireDA from './Daf/afficherAffaire';
 import AfficherMissionDA from './Daf/afficherMission';
 import FacturationManager from './Daf/facturation';
+import FacturationManagerRE from './Recouverement/facturationRE';
+import EncaissementManager from './Recouverement/encaisementRE';
 
 
 function LogoutComponent() {
@@ -96,8 +98,9 @@ const routes = [
   /* { path: '/avancementCDP', element: AvancementCDP, title: 'Avancement - CID',public:true }, */
   { path: '/afficherAffaireDA', element: AfficherAffaireDA, title: 'Afficher affaires DAF - CID',public:true },
   { path: '/afficherMissionDA/:idAffaire', element: AfficherMissionDA, title: 'Afficher mission DAF - CID',public:true },
-  { path: '/afficherFacturationDA/:idMission', element: FacturationManager, title: 'Afficher mission DAF - CID',public:true },
-
+  { path: '/afficherFacturationDA/:idMission', element: FacturationManager, title: 'Afficher facturation DAF - CID',public:true },
+  { path: '/afficherFacturationRE', element: FacturationManagerRE, title: 'Afficher facturation RECOUVREMENT - CID',public:true },
+  { path: '/afficherEncaisementRE/:idFacture', element: EncaissementManager, title: 'Afficher encaisement RECOUVREMENT - CID',public:true },
 
 
 
