@@ -9,14 +9,14 @@ import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { Receipt, Edit, Trash } from "lucide-react";
 
 const EncaissementManager = () => {
-  const { idFacture } = useParams();
+  const { idFacturef } = useParams();
   const navigate = useNavigate();
   const [encaissements, setEncaissements] = useState([]);
   const [newEncaissement, setNewEncaissement] = useState({
     documentFacture: '',
     dateEncaissement: '',
     montantEncaisse: '',
-    idFacture: idFacture
+    idFacture: idFacturef
   });
 
   useEffect(() => {
@@ -25,7 +25,7 @@ const EncaissementManager = () => {
 
   const fetchEncaissements = async () => {
     try {
-      const response = await axios.get('http://localhost:8080/api/encaissements');
+      const response = await axios.get(`http://localhost:8080/api/encaissements/byfacture/${idFacturef}`);
       setEncaissements(response.data);
     } catch (error) {
       console.error('Error fetching encaissements:', error);
@@ -54,13 +54,16 @@ const EncaissementManager = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:8080/api/encaissements', newEncaissement);
-      setNewEncaissement({
-        documentFacture: '',
-        dateEncaissement: '',
-        montantEncaisse: '',
-        idFacture: idFacture
-      });
+      await axios.post('http://localhost:8080/api/encaissements', {
+         ...newEncaissement,
+         facturation: { id_facture: idFacturef }, 
+       });
+       setNewEncaissement({
+         documentFacture: '',
+         dateEncaissement: '',
+         montantEncaisse: '',
+         facturation: { id_facture: idFacturef }
+       });
       fetchEncaissements(); 
     } catch (error) {
       console.error('Error adding encaissement:', error);
@@ -142,7 +145,7 @@ const EncaissementManager = () => {
                         <td>{new Date(encaissement.dateEncaissement).toLocaleDateString('fr-FR')}</td>
                         <td>{encaissement.montantEncaisse} DH</td>
                         <td>
-                          Facture #{idFacture}
+                          Facture #{idFacturef}
                         </td>
                         <td className="flex gap-2">
                         {/*   <button
