@@ -15,9 +15,10 @@ const FacturationManager = () => {
     montantFacture: '',
     documentFacture: '',
     dateFacturation: '',
-    idMission: idMissionf 
-  });
+    id_mission: idMission,
+    file: null 
 
+  });
 
   useEffect(() => {
     fetchFacturations();
@@ -34,25 +35,33 @@ const FacturationManager = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     const url = selectedFacture 
-      ? `http://localhost:8080/api/facturations/${selectedFacture.id_facture}`
+      ? `http://localhost:8080/api/facturations/${selectedFacture.id_facture}` 
       : 'http://localhost:8080/api/facturations';
     
     const method = selectedFacture ? 'PUT' : 'POST';
-  
+
+    const formDataToSend = new FormData();
+    formDataToSend.append('montantFacture', formData.montantFacture);
+    formDataToSend.append('dateFacturation', formData.dateFacturation);
+    formDataToSend.append('id_mission', formData.id_mission);
+    if (formData.file) {
+        formDataToSend.append('file', formData.file);
+    }
+    
+    console.log(formDataToSend)
+
     try {
       const response = await axios({
         method: method,
         url: url,
-        data: {
-          montantFacture: formData.montantFacture,
-          documentFacture: formData.documentFacture,
-          dateFacturation: formData.dateFacturation,
-          mission: { id_mission: formData.idMission }
+        data: formDataToSend,
+        headers: {
+          'Content-Type': 'multipart/form-data',
         },
       });
-  
+
       if (response.status === 200 || response.status === 201) {
         fetchFacturations(); 
         handleCloseModal();
@@ -70,7 +79,9 @@ const FacturationManager = () => {
       montantFacture: '',
       documentFacture: '',
       dateFacturation: '',
-      idMission: idMissionf
+      id_mission: idMission,
+      file: null
+
     });
     setSelectedFacture(null);
   };
@@ -83,10 +94,12 @@ const FacturationManager = () => {
   const handleOpenModal = (facture = null) => {
     setSelectedFacture(facture);
     setFormData({
-      montantFacture: facture ?  facture.montantFacture : '',
+      montantFacture: facture ? facture.montantFacture : '',
       documentFacture: facture ? facture.documentFacture : '',
       dateFacturation: facture ? facture.dateFacturation : '',
-      idMission: idMissionf
+      id_mission: idMission,
+      file: null 
+
     });
     setIsOpen(true);
   };
@@ -102,7 +115,7 @@ const FacturationManager = () => {
               <h2 className="text-xl font-semibold">Gestion des Facturations</h2>
               <button 
                 onClick={() => handleOpenModal()} 
-                className="flex items-center bg-blue-700 text-blue py-2 px-4 rounded"
+                className="flex items-center bg-blue-600 text-black py-2 px-4 rounded hover:bg-blue-700 transition duration-300"
               >
                 <Plus className="h-4 w-4 mr-2" />
                 Nouvelle Facturation
@@ -124,9 +137,8 @@ const FacturationManager = () => {
                 <div>
                   <label className="block text-sm font-medium mb-1">Document de la Facture</label>
                   <input
-                    type="text"
-                    value={formData.documentFacture}
-                    onChange={(e) => setFormData({ ...formData, documentFacture: e.target.value })}
+                    type="file"
+                    onChange={(e) => setFormData({ ...formData, file: e.target.files[0] })}
                     required
                     className="border rounded-md p-2 w-full"
                   />
@@ -141,49 +153,45 @@ const FacturationManager = () => {
                     className="border rounded-md p-2 w-full"
                   />
                 </div>
-                <button type="submit" className="bg-green-500 text-blue py-2 px-4 rounded">
+                <button type="submit" className="bg-blue-600 text-black py-2 px-4 rounded hover:bg-blue-700 transition duration-300">
                   {selectedFacture ? 'Modifier' : 'Créer'} la Facturation
                 </button>
               </form>
             )}
             
             <div className="mt-4">
-  <h3 className="fw-bold mb-3">Liste des Facturations</h3>
-  <div className="table-responsive">
-    <table className="table table-striped table-hover mt-3">
-      <thead>
-        <tr>
-          <th>ID Facture</th>
-          <th>Document de Facture</th>
-          <th>Montant</th>
-          <th>Date de Facturation</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {facturations.length > 0 ? (
-          facturations.map((facture) => (
-            <tr key={facture.id_facture}>
-              <td>{facture.id_facture}</td>
-              <td>{facture.documentFacture}</td>
-              <td>{facture.montantFacture}</td>
-              <td>{facture.dateFacturation}</td>
-              <td>
-                <button onClick={() => handleOpenModal(facture)} className="text-blue-500 ml-2">
-                  Modifier
-                </button>
-              </td>
-            </tr>
-          ))
-        ) : (
-          <tr>
-            <td colSpan="5" className="text-center">Aucune donnée trouvée.</td>
-          </tr>
-        )}
-      </tbody>
-    </table>
-  </div>
-</div>
+              <h3 className="fw-bold mb-3">Liste des Facturations</h3>
+              <div className="table-responsive">
+                <table className="table table-striped table-hover mt-3">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Montant</th>
+                      <th>Document</th>
+                      <th>Date</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {facturations.map((facture) => (
+                      <tr key={facture.id_facture}>
+                        <td>{facture.id_facture}</td>
+                        <td>{facture.montantFacture}</td>
+                        <td>{facture.documentFacture}</td>
+                        <td>{facture.dateFacturation}</td>
+                        <td>
+                          <button onClick={() => handleOpenModal(facture)} 
+                                  className="bg-blue-600 text-black rounded-md px-4 py-2 hover:bg-blue-700 
+                                             transition duration-300">
+                            Modifier
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
         </div>
         <Footer />

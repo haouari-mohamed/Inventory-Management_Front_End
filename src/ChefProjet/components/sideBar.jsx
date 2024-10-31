@@ -61,7 +61,7 @@ const Sidebar = ({ logo, menuItems = [] }) => (
                     </li>
                     <SidebarItem href="/afficherAffaireCDP" icon="fas fa-layer-group" text="Liste des affaires" />
                     {/* Add Avancement CDP item */}
-                    <SidebarItem href="/avancementCDP" icon="fas fa-tasks" text="Avancement CDP" />
+                    {/* <SidebarItem href="/avancementCDP" icon="fas fa-tasks" text="Avancement CDP" /> */}
 
                 </ul>
                 <ul className="nav">
