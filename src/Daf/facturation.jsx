@@ -7,7 +7,7 @@ import MainHeader from './components/mainHeader';
 import Footer from './components/footer';
 
 const FacturationManager = () => {
-  const { idMission } = useParams();
+  const { idMissionf } = useParams();
   const [facturations, setFacturations] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [selectedFacture, setSelectedFacture] = useState(null);
@@ -17,6 +17,7 @@ const FacturationManager = () => {
     dateFacturation: '',
     id_mission: idMission,
     file: null 
+
   });
 
   useEffect(() => {
@@ -25,7 +26,7 @@ const FacturationManager = () => {
 
   const fetchFacturations = async () => {
     try {
-      const response = await axios.get('http://localhost:8080/api/facturations');
+      const response = await axios.get(`http://localhost:8080/api/facturations/bymission/${idMissionf}`);
       setFacturations(response.data);
     } catch (error) {
       console.error('Error fetching facturations:', error);
@@ -80,6 +81,7 @@ const FacturationManager = () => {
       dateFacturation: '',
       id_mission: idMission,
       file: null
+
     });
     setSelectedFacture(null);
   };
@@ -97,6 +99,7 @@ const FacturationManager = () => {
       dateFacturation: facture ? facture.dateFacturation : '',
       id_mission: idMission,
       file: null 
+
     });
     setIsOpen(true);
   };
