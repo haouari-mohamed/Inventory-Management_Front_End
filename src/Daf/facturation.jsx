@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
-import { Plus } from "lucide-react";
+import { Plus, Download, XCircle } from "lucide-react";
 import Sidebar from './components/sideBar';
 import MainHeader from './components/mainHeader';
 import Footer from './components/footer';
@@ -11,13 +11,13 @@ const FacturationManager = () => {
   const [facturations, setFacturations] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [selectedFacture, setSelectedFacture] = useState(null);
+  const [downloadError, setDownloadError] = useState('');
   const [formData, setFormData] = useState({
     montantFacture: '',
     documentFacture: '',
     dateFacturation: '',
-    id_mission: idMission,
+    mission: { id_mission: idMissionf },
     file: null 
-
   });
 
   useEffect(() => {
@@ -33,6 +33,40 @@ const FacturationManager = () => {
     }
   };
 
+  const handleDownload = async (fileName) => {
+    console.log("Downloading file:", fileName);
+    try {
+      const response = await axios({
+        url: `http://localhost:8080/api/facturations/download/${fileName}`,
+        method: 'GET',
+        responseType: 'blob',
+
+      
+      });
+    
+
+      // Create a URL for the blob
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      
+      // Create a temporary link element
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', fileName);
+      
+      // Append to body, click, and remove
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link);
+      
+      // Clean up the URL
+      window.URL.revokeObjectURL(url);
+      setDownloadError('');
+    } catch (error) {
+      console.error('Error downloading file:', error);
+      setDownloadError('Erreur lors du téléchargement du fichier. Veuillez réessayer plus tard.');
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -45,12 +79,10 @@ const FacturationManager = () => {
     const formDataToSend = new FormData();
     formDataToSend.append('montantFacture', formData.montantFacture);
     formDataToSend.append('dateFacturation', formData.dateFacturation);
-    formDataToSend.append('id_mission', formData.id_mission);
+    formDataToSend.append('id_mission', idMissionf);
     if (formData.file) {
-        formDataToSend.append('file', formData.file);
+      formDataToSend.append('file', formData.file);
     }
-    
-    console.log(formDataToSend)
 
     try {
       const response = await axios({
@@ -66,8 +98,6 @@ const FacturationManager = () => {
         fetchFacturations(); 
         handleCloseModal();
         resetForm();
-      } else {
-        console.error('Error updating facturation:', response.data);
       }
     } catch (error) {
       console.error('Error saving facturation:', error);
@@ -79,9 +109,8 @@ const FacturationManager = () => {
       montantFacture: '',
       documentFacture: '',
       dateFacturation: '',
-      id_mission: idMission,
+      mission: { id_mission: formData.idMission },
       file: null
-
     });
     setSelectedFacture(null);
   };
@@ -97,9 +126,8 @@ const FacturationManager = () => {
       montantFacture: facture ? facture.montantFacture : '',
       documentFacture: facture ? facture.documentFacture : '',
       dateFacturation: facture ? facture.dateFacturation : '',
-      id_mission: idMission,
-      file: null 
-
+      id_mission: idMissionf,
+      file: null
     });
     setIsOpen(true);
   };
@@ -121,6 +149,19 @@ const FacturationManager = () => {
                 Nouvelle Facturation
               </button>
             </div>
+
+            {downloadError && (
+              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mt-4 flex items-center">
+                <XCircle className="h-4 w-4 mr-2" />
+                <span>{downloadError}</span>
+                <button 
+                  className="absolute top-0 right-0 p-2"
+                  onClick={() => setDownloadError('')}
+                >
+                  <XCircle className="h-4 w-4" />
+                </button>
+              </div>
+            )}
             
             {isOpen && (
               <form onSubmit={handleSubmit} className="space-y-4 mt-4">
@@ -177,12 +218,24 @@ const FacturationManager = () => {
                       <tr key={facture.id_facture}>
                         <td>{facture.id_facture}</td>
                         <td>{facture.montantFacture}</td>
-                        <td>{facture.documentFacture}</td>
+                        <td>
+                          <button
+                            onClick={() => handleDownload(facture.documentFacture)
+                              
+                            }
+                            className="flex items-center text-blue-600 hover:text-blue-800"
+                          >
+                           
+                            <Download className="h-4 w-4 mr-1" />
+                            {facture.documentFacture}
+                          </button>
+                        </td>
                         <td>{facture.dateFacturation}</td>
                         <td>
-                          <button onClick={() => handleOpenModal(facture)} 
-                                  className="bg-blue-600 text-black rounded-md px-4 py-2 hover:bg-blue-700 
-                                             transition duration-300">
+                          <button 
+                            onClick={() => handleOpenModal(facture)}
+                            className="bg-blue-600 text-black rounded-md px-4 py-2 hover:bg-blue-700 transition duration-300"
+                          >
                             Modifier
                           </button>
                         </td>
