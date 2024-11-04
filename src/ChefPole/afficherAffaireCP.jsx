@@ -1,11 +1,7 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable jsx-a11y/img-redundant-alt */
-/* eslint-disable no-script-url */
-/* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { Modal, Button } from 'react-bootstrap';
+import { Modal, Button, Table } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSort, faSortUp, faSortDown, faInfo, faTasks } from '@fortawesome/free-solid-svg-icons';
 import Sidebar from './components/sideBar';
@@ -28,9 +24,12 @@ const TableRow = ({ item, onShowInfo }) => (
 
 const AfficherAffaire = () => {
     const navigate = useNavigate();
-    const [affaires, setAffaires] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState('');
+    const [affairesPrincipales, setAffairesPrincipales] = useState([]);
+    const [affairesSecondaires, setAffairesSecondaires] = useState([]);
+    const [loadingPrincipales, setLoadingPrincipales] = useState(true);
+    const [loadingSecondaires, setLoadingSecondaires] = useState(true);
+    const [errorPrincipales, setErrorPrincipales] = useState('');
+    const [errorSecondaires, setErrorSecondaires] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
     const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
     const [userPole, setUserPole] = useState(null);
@@ -44,36 +43,45 @@ const AfficherAffaire = () => {
             setUserPole(response.data.pole);
         } catch (error) {
             console.error('Error fetching user pole:', error);
-            setError('Failed to fetch user information');
+            setErrorPrincipales('Failed to fetch user information');
         }
     };
 
-    const fetchAffaires = useCallback(async () => {
-        if (!userPole) return;
-
+    const fetchAffairesPrincipales = useCallback(async (userId) => {
         try {
-            const response = await axios.get('http://localhost:8080/api/affaires');
-            const filteredAffaires = response.data.filter(affaire => 
-                affaire.polePrincipale.id_pole === userPole.id_pole
-            );
-            setAffaires(filteredAffaires);
-            setLoading(false);
+            const response = await axios.get(`http://localhost:8080/api/affaires/affairechefpoleprincipale/${userId}`);
+            setAffairesPrincipales(response.data);
         } catch (error) {
-            console.error('Error fetching affaires:', error);
-            setError('Failed to fetch affaires');
-            setLoading(false);
+            console.error("Error fetching principales affaires:", error);
+            setErrorPrincipales("Failed to fetch principales affaires data");
+        } finally {
+            setLoadingPrincipales(false);
         }
-    }, [userPole]);
-
+    }, []);
+    
+    const fetchAffairesSecondaires = useCallback(async (userId) => {
+        try {
+            const response = await axios.get(`http://localhost:8080/api/affaires/affairechefpolesecondaire/${userId}`);
+            setAffairesSecondaires(response.data);
+        } catch (error) {
+            console.error("Error fetching secondaires affaires:", error);
+            setErrorSecondaires("Failed to fetch secondaires affaires data");
+        } finally {
+            setLoadingSecondaires(false);
+        }
+    }, []);
+    
+    useEffect(() => {
+        const userId = localStorage.getItem("userId");
+        if (userPole && userId) {
+            fetchAffairesPrincipales(userId);
+            fetchAffairesSecondaires(userId);
+        }
+    }, [userPole, fetchAffairesPrincipales, fetchAffairesSecondaires]);
+          
     useEffect(() => {
         fetchUserPole();
     }, []);
-
-    useEffect(() => {
-        if (userPole) {
-            fetchAffaires();
-        }
-    }, [userPole, fetchAffaires]);
 
     const handleSearch = (term) => {
         setSearchTerm(term);
@@ -87,15 +95,22 @@ const AfficherAffaire = () => {
         setSortConfig({ key, direction });
     };
 
-    const filteredAffaires = useMemo(() => {
-        return affaires.filter(affaire =>
+    const filteredAffairesPrincipales = useMemo(() => {
+        return affairesPrincipales.filter(affaire =>
             affaire.libelle_affaire.toLowerCase().includes(searchTerm.toLowerCase()) ||
             affaire.client.nom_client.toLowerCase().includes(searchTerm.toLowerCase())
         );
-    }, [affaires, searchTerm]);
+    }, [affairesPrincipales, searchTerm]);
 
-    const sortedData = useMemo(() => {
-        let sortableItems = [...filteredAffaires];
+    const filteredAffairesSecondaires = useMemo(() => {
+        return affairesSecondaires.filter(affaire =>
+            affaire.libelle_affaire.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            affaire.client.nom_client.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+    }, [affairesSecondaires, searchTerm]);
+
+    const sortedDataPrincipales = useMemo(() => {
+        let sortableItems = [...filteredAffairesPrincipales];
         if (sortConfig.key !== null) {
             sortableItems.sort((a, b) => {
                 if (a[sortConfig.key] < b[sortConfig.key]) {
@@ -108,14 +123,23 @@ const AfficherAffaire = () => {
             });
         }
         return sortableItems;
-    }, [filteredAffaires, sortConfig]);
+    }, [filteredAffairesPrincipales, sortConfig]);
 
-    const getSortIcon = (columnName) => {
-        if (sortConfig.key === columnName) {
-            return sortConfig.direction === 'ascending' ? faSortUp : faSortDown;
+    const sortedDataSecondaires = useMemo(() => {
+        let sortableItems = [...filteredAffairesSecondaires];
+        if (sortConfig.key !== null) {
+            sortableItems.sort((a, b) => {
+                if (a[sortConfig.key] < b[sortConfig.key]) {
+                    return sortConfig.direction === 'ascending' ? -1 : 1;
+                }
+                if (a[sortConfig.key] > b[sortConfig.key]) {
+                    return sortConfig.direction === 'ascending' ? 1 : -1;
+                }
+                return 0;
+            });
         }
-        return faSort;
-    };
+        return sortableItems;
+    }, [filteredAffairesSecondaires, sortConfig]);
 
     const handleShowInfo = (affaire) => {
         setSelectedAffaire(affaire);
@@ -142,46 +166,70 @@ const AfficherAffaire = () => {
                         <div className="page-header">
                             <h3 className="fw-bold mb-3">Gestion des Affaires</h3>
                         </div>
+                        
                         <div className="row">
                             <div className="col-md-12">
                                 <div className="card">
                                     <div className="card-header">
-                                        <div className="d-flex align-items-center">
-                                            <h4 className="card-title">Liste des affaires du pôle {userPole?.libelle_pole}</h4>
-                                            
-                                        </div>
+                                        <h4 className="card-title">Affaires Principales</h4>
                                     </div>
                                     <div className="card-body">
                                         <div className="table-responsive">
-                                            {loading ? (
+                                            {loadingPrincipales ? (
                                                 <p>Loading...</p>
-                                            ) : error ? (
-                                                <p>{error}</p>
+                                            ) : errorPrincipales ? (
+                                                <p>{errorPrincipales}</p>
                                             ) : (
-                                                <table className="table table-striped table-hover mt-3">
+                                                <Table striped hover>
                                                     <thead>
                                                         <tr>
-                                                            <th onClick={() => requestSort('idAffaire')}>
-                                                                ID Affaire <FontAwesomeIcon icon={getSortIcon('idAffaire')} />
-                                                            </th>
-                                                            <th onClick={() => requestSort('libelle_affaire')}>
-                                                                Libellé Affaire <FontAwesomeIcon icon={getSortIcon('libelle_affaire')} />
-                                                            </th>
-                                                            <th onClick={() => requestSort('statusAffaire')}>
-                                                                Status <FontAwesomeIcon icon={getSortIcon('statusAffaire')} />
-                                                            </th>
-                                                            <th onClick={() => requestSort('client.nom_client')}>
-                                                                Client <FontAwesomeIcon icon={getSortIcon('client.nom_client')} />
-                                                            </th>
+                                                            <th>ID Affaire</th>
+                                                            <th>Libellé Affaire</th>
+                                                            <th>Status</th>
+                                                            <th>Client</th>
                                                             <th>Actions</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        {sortedData.map((item) => (
+                                                        {sortedDataPrincipales.map((item) => (
                                                             <TableRow key={item.idAffaire} item={item} onShowInfo={handleShowInfo} />
                                                         ))}
                                                     </tbody>
-                                                </table>
+                                                </Table>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="col-md-12 mt-4">
+                                <div className="card">
+                                    <div className="card-header">
+                                        <h4 className="card-title">Affaires Secondaires</h4>
+                                    </div>
+                                    <div className="card-body">
+                                        <div className="table-responsive">
+                                            {loadingSecondaires ? (
+                                                <p>Loading...</p>
+                                            ) : errorSecondaires ? (
+                                                <p>{errorSecondaires}</p>
+                                            ) : (
+                                                <Table striped hover>
+                                                    <thead>
+                                                        <tr>
+                                                            <th>ID Affaire</th>
+                                                            <th>Libellé Affaire</th>
+                                                            <th>Status</th>
+                                                            <th>Client</th>
+                                                            <th>Actions</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {sortedDataSecondaires.map((item) => (
+                                                            <TableRow key={item.idAffaire} item={item} onShowInfo={handleShowInfo} />
+                                                        ))}
+                                                    </tbody>
+                                                </Table>
                                             )}
                                         </div>
                                     </div>
@@ -189,50 +237,24 @@ const AfficherAffaire = () => {
                             </div>
                         </div>
                     </div>
-                    <Footer />
                 </div>
+                <Footer />
             </div>
 
-            <Modal show={showModal} onHide={handleCloseModal} size="lg" centered>
-                <Modal.Header closeButton>
-                    <Modal.Title>Détails de l'Affaire</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    {selectedAffaire && (
-                        <div>
-                            <p><strong>ID Affaire:</strong> {selectedAffaire.idAffaire}</p>
-                            <p><strong>Libellé Affaire:</strong> {selectedAffaire.libelle_affaire}</p>
-                            <p><strong>Prix Global:</strong> {selectedAffaire.prixGlobal} DH</p>
-                            <p><strong>Status:</strong> {selectedAffaire.statusAffaire}</p>
-                            <p><strong>Numéro de Marché:</strong> {selectedAffaire.marche}</p>
-                            <p><strong>Date de Début:</strong> {new Date(selectedAffaire.dateDebut).toLocaleDateString()}</p>
-                            <p><strong>Date de Fin:</strong> {new Date(selectedAffaire.dateFin).toLocaleDateString()}</p>
-                            {selectedAffaire.dateArret && (
-                                <p><strong>Date d'Arrêt:</strong> {new Date(selectedAffaire.dateArret).toLocaleDateString()}</p>
-                            )}
-                            {selectedAffaire.dateRecommencement && (
-                                <p><strong>Date de Recommencement:</strong> {new Date(selectedAffaire.dateRecommencement).toLocaleDateString()}</p>
-                            )}
-                            <p><strong>Client:</strong> {selectedAffaire.client.nom_client}</p>
-                            <p><strong>Pôle Principal:</strong> {selectedAffaire.polePrincipale.libelle_pole}</p>
-                            <p><strong>Division Principale:</strong> {selectedAffaire.divisionPrincipale.nom_division}</p>
-                            <p><strong>Part CID:</strong> {selectedAffaire.partCID} DH</p>
-                        </div>
-                    )}
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={handleCloseModal}>
-                        Fermer
-                    </Button>
-                    <Button 
-                        variant="primary" 
-                        onClick={() => handleShowMissions(selectedAffaire.idAffaire)}
-                    >
-                        <FontAwesomeIcon icon={faTasks} className="me-2" />
-                        Afficher Missions
-                    </Button>
-                </Modal.Footer>
-            </Modal>
+            {selectedAffaire && (
+                <Modal show={showModal} onHide={handleCloseModal}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Détails de l'Affaire</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <p>ID: {selectedAffaire.idAffaire}</p>
+                        <p>Libellé: {selectedAffaire.libelle_affaire}</p>
+                        <p>Status: {selectedAffaire.statusAffaire}</p>
+                        <p>Client: {selectedAffaire.client.nom_client}</p>
+                        <Button onClick={() => handleShowMissions(selectedAffaire.idAffaire)}>Voir Missions</Button>
+                    </Modal.Body>
+                </Modal>
+            )}
         </div>
     );
 };
