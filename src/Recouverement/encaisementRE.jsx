@@ -146,7 +146,7 @@ const EncaissementManager = () => {
                         <td>{encaissement.montantEncaisse} DH</td>
                         <td>
                           Facture #{idFacturef}
-                        </td>
+                        </td>n
                         <td className="flex gap-2">
                         {/*   <button
                             className="text-blue-600"
