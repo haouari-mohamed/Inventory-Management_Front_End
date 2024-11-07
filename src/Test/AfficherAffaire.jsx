@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './Sidebar.css'; 
 import { useNavigate } from 'react-router-dom';
+import AfficherMissionTest from './AfficherMission';
 
 const AfficherAffaireTest = () => {
    const [affaires, setAffaires] = useState([]);
@@ -50,6 +51,7 @@ const AfficherAffaireTest = () => {
                ))}
             </ul>
          </div>
+         
 
          
 
