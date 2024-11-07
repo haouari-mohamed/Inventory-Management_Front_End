@@ -52,6 +52,7 @@ import AfficherMissionDA from './Daf/afficherMission';
 import FacturationManager from './Daf/facturation';
 import FacturationManagerRE from './Recouverement/facturationRE';
 import EncaissementManager from './Recouverement/encaisementRE';
+import AfficherAffaireTest from './Test/AfficherAffaire';
 
 
 function LogoutComponent() {
@@ -126,6 +127,7 @@ const routes = [
   { path: '/profileCP', element: ProfilePageCP, title: 'Profile - CID' },
   { path: '/profileCD', element: ProfilePageCD, title: 'Profile - CID' },
   { path: '/profileCDP', element: ProfilePageCDP, title: 'Profile - CID' },
+  { path: '/tee', element: AfficherAffaireTest, title: 'Profile - CID',public:true },
 ];
 
 function App() {
