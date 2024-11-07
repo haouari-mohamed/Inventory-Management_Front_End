@@ -26,7 +26,7 @@ const FacturationManager = () => {
 
   const fetchFacturations = async () => {
     try {
-      const response = await axios.get(`http://localhost:8080/api/facturations/bymission/${idMissionf}`);
+      const response = await axios.get(`http://localhost:8080/api/facturations/bymission/1`);
       setFacturations(response.data);
     } catch (error) {
       console.error('Error fetching facturations:', error);
@@ -112,11 +112,12 @@ const FacturationManager = () => {
       montantFacture: '',
       documentFacture: '',
       dateFacturation: '',
-      mission: { id_mission: formData.idMission },
+      mission: { id_mission: idMissionf },
       file: null
     });
     setSelectedFacture(null);
   };
+  
 
   const handleCloseModal = () => {
     setIsOpen(false);
