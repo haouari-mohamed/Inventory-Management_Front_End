@@ -1,0 +1,54 @@
+/* Container to hold the sidebar and content */
+.container {
+   display: flex;
+   flex-wrap: nowrap;
+justify-content: space-between;
+   padding: 20px;
+}
+
+/* Sidebar styling */
+.sidebar {
+   width: 250px;
+   background-color: #f4f4f4; /* Light gray background for sidebar */
+   padding: 20px;
+   border-radius: 8px;
+   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+   height: auto;
+}
+
+/* Content area styling */
+.content {
+   flex: 1; /* The content takes up the remaining space */
+   background-color: #fff;
+   padding: 20px;
+   border-radius: 8px;
+   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Heading styling */
+.content h2 {
+   font-size: 24px;
+   font-weight: bold;
+   margin-bottom: 20px;
+}
+
+/* Paragraph styling */
+.content p {
+   font-size: 16px;
+   margin-bottom: 10px;
+}
+
+.content p strong {
+   font-weight: bold;
+}
+
+/* For responsiveness, adjust layout on smaller screens */
+@media (max-width: 768px) {
+   .container {
+      flex-direction: column; /* Stack the sidebar and content vertically */
+   }
+   .sidebar {
+      width: 100%;
+      margin-bottom: 20px; /* Add margin for separation */
+   }
+}
