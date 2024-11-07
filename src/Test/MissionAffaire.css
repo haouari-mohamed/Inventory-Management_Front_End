@@ -19,7 +19,7 @@
    border-radius: 8px;
    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
    height: auto;
-   display: none;
+   
  }
  
  /* Content area styling */
@@ -32,7 +32,7 @@
    
    transition: transform 0.2s, box-shadow 0.2s;
    height: 95vh;
-   margin-left: 400px;
+   margin-left: 240px;
 
 
 }
