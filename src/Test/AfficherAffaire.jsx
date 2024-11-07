@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import './Sidebar.css'; // Assurez-vous de créer ce fichier CSS
+import './Sidebar.css'; 
+import { useNavigate } from 'react-router-dom';
 
 const AfficherAffaireTest = () => {
    const [affaires, setAffaires] = useState([]);
    const [loading, setLoading] = useState(false);
    const [error, setError] = useState('');
-   const [selectedAffaire, setSelectedAffaire] = useState(null); // Pour suivre l'affaire sélectionnée
+   const navigate = useNavigate();
 
    const fetchAffaires = async () => {
       try {
@@ -26,6 +27,11 @@ const AfficherAffaireTest = () => {
       fetchAffaires();
    }, []);
 
+   const handleAffaireClick = (idAffaire) => {
+   
+      navigate(`/affaires/${idAffaire}/mission`);
+   };
+
    return (
       <div className="cont">
          <div className=" left-sidebar">
@@ -37,7 +43,7 @@ const AfficherAffaireTest = () => {
                   <li
                      key={index}
                      className="sidebar-item"
-                     onClick={() => setSelectedAffaire(affaire.idAffaire)}
+                     onClick={() => handleAffaireClick(affaire.idAffaire)}
                   >
                      {affaire.idAffaire}
                   </li>
@@ -45,14 +51,13 @@ const AfficherAffaireTest = () => {
             </ul>
          </div>
 
+         
+
        
          <div className=" right-sidebar">
             <h2 className="sidebar-title">Détails de l'Affaire</h2>
-            {selectedAffaire ? (
-               <p className="affaire-detail">Numéro de l'affaire : {selectedAffaire}</p>
-            ) : (
-               <p className="affaire-detail">Sélectionnez une affaire</p>
-            )}
+            
+            
          </div>
       </div>
    );
