@@ -1,0 +1,63 @@
+/* Conteneur principal pour la disposition */
+.main-container {
+   display: flex;
+   justify-content: space-between;
+   height: 100vh;
+}
+
+/* Barre latérale gauche (bleue) */
+.left-sidebar {
+   width: 250px;
+   background-color: #007bff; /* Couleur bleue */
+   color: white;
+   padding: 20px;
+   overflow-y: auto;
+}
+
+/* Barre latérale droite (jaune) */
+.right-sidebar {
+   width: 250px;
+   background-color: #ffeb3b; /* Couleur jaune */
+   color: black;
+   padding: 20px;
+   overflow-y: auto;
+}
+
+/* Contenu principal */
+.content {
+   flex-grow: 1; /* Prend l'espace entre les deux barres */
+   margin-left: 250px; /* Espace pour la barre gauche */
+   margin-right: 250px; /* Espace pour la barre droite */
+}
+
+/* Styles communs pour les titres et listes */
+.sidebar-title {
+   font-size: 1.5em;
+   margin-bottom: 20px;
+   text-align: center;
+}
+
+.sidebar-list {
+   list-style-type: none;
+   padding: 0;
+}
+
+.sidebar-item {
+   margin: 10px 0;
+   padding: 10px;
+   border-radius: 5px;
+   background-color: rgba(255, 255, 255, 0.2);
+   cursor: pointer;
+   text-align: center;
+}
+
+.sidebar-item:hover {
+   background-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Détails de l'affaire sélectionnée */
+.affaire-detail {
+   font-size: 1.2em;
+   text-align: center;
+   margin-top: 20px;
+}
