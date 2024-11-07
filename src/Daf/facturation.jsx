@@ -33,32 +33,32 @@ const FacturationManager = () => {
     }
   };
 
-  const handleDownload = async (fileName) => {
-    console.log("Downloading file:", fileName);
+  
+
+  const handleDownload = async (id_facture) => {
+    console.log("Downloading file for facture ID:", id_facture);
     try {
       const response = await axios({
-        url: `http://localhost:8080/api/facturations/download/${fileName}`,
+        url: `http://localhost:8080/api/facturations/download/${id_facture}`, 
         method: 'GET',
         responseType: 'blob',
-
-      
       });
-    
-
-      // Create a URL for the blob
+      console.log("i think the problem here ")
+      console.log(response.data)
+  
+      const contentDisposition = response.headers['content-disposition'];
+      const fileName = contentDisposition
+        ? contentDisposition.split('filename=')[1].replace(/"/g, '') 
+        : 'downloaded_file';
+  
       const url = window.URL.createObjectURL(new Blob([response.data]));
-      
-      // Create a temporary link element
       const link = document.createElement('a');
       link.href = url;
       link.setAttribute('download', fileName);
-      
-      // Append to body, click, and remove
       document.body.appendChild(link);
       link.click();
       link.parentNode.removeChild(link);
-      
-      // Clean up the URL
+  
       window.URL.revokeObjectURL(url);
       setDownloadError('');
     } catch (error) {
@@ -66,6 +66,9 @@ const FacturationManager = () => {
       setDownloadError('Erreur lors du téléchargement du fichier. Veuillez réessayer plus tard.');
     }
   };
+  
+
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -143,7 +146,7 @@ const FacturationManager = () => {
               <h2 className="text-xl font-semibold">Gestion des Facturations</h2>
               <button 
                 onClick={() => handleOpenModal()} 
-                className="flex items-center bg-blue-600 text-black py-2 px-4 rounded hover:bg-blue-700 transition duration-300"
+                className=" btn btn-primary flex items-center bg-blue-600 text-black py-2 px-4 rounded hover:bg-blue-700 transition duration-300"
               >
                 <Plus className="h-4 w-4 mr-2" />
                 Nouvelle Facturation
@@ -164,40 +167,50 @@ const FacturationManager = () => {
             )}
             
             {isOpen && (
-              <form onSubmit={handleSubmit} className="space-y-4 mt-4">
-                <div>
-                  <label className="block text-sm font-medium mb-1">Montant de la Facture</label>
-                  <input
-                    type="number"
-                    value={formData.montantFacture}
-                    onChange={(e) => setFormData({ ...formData, montantFacture: e.target.value })}
-                    required
-                    className="border rounded-md p-2 w-full"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">Document de la Facture</label>
-                  <input
-                    type="file"
-                    onChange={(e) => setFormData({ ...formData, file: e.target.files[0] })}
-                    required
-                    className="border rounded-md p-2 w-full"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">Date de Facturation</label>
-                  <input
-                    type="date"
-                    value={formData.dateFacturation}
-                    onChange={(e) => setFormData({ ...formData, dateFacturation: e.target.value })}
-                    required
-                    className="border rounded-md p-2 w-full"
-                  />
-                </div>
-                <button type="submit" className="bg-blue-600 text-black py-2 px-4 rounded hover:bg-blue-700 transition duration-300">
-                  {selectedFacture ? 'Modifier' : 'Créer'} la Facturation
-                </button>
-              </form>
+             <form onSubmit={handleSubmit} className="space-y-4 mt-4 ">
+              <div className="d-flex ">
+              <div className="flex flex-col md:flex-row items-center md:space-x-4">
+               <div className="flex-1">
+                 <label className="block text-sm font-medium mb-1">Montant de la Facture</label>
+                 <input
+                   type="number"
+                   value={formData.montantFacture}
+                   onChange={(e) => setFormData({ ...formData, montantFacture: e.target.value })}
+                   required
+                   className="border rounded-lg p-2 w-full"
+                 />
+               </div>
+               <div className="mt-2 flex-1">
+                 <label className="block text-sm font-medium mb-1">Document de la Facture</label>
+                 <input
+                   type="file"
+                   onChange={(e) => setFormData({ ...formData, file: e.target.files[0] })}
+                   required
+                   className="border rounded-lg p-2 w-full"
+                 />
+               </div>
+             </div>
+             <div className="flex-1">
+               <label className="block text-sm font-medium mb-1">Date de Facturation</label>
+               <input
+                 type="date"
+                 value={formData.dateFacturation}
+                 onChange={(e) => setFormData({ ...formData, dateFacturation: e.target.value })}
+                 required
+                 className="border rounded-lg p-2 w-full"
+               />
+             </div>
+
+              </div>
+            
+             <button
+               type="submit"
+               className="btn btn-primary bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-300"
+             >
+               {selectedFacture ? 'Modifier' : 'Créer'} la Facturation
+             </button>
+           </form>
+           
             )}
             
             <div className="mt-4">
@@ -219,22 +232,20 @@ const FacturationManager = () => {
                         <td>{facture.id_facture}</td>
                         <td>{facture.montantFacture}</td>
                         <td>
-                          <button
-                            onClick={() => handleDownload(facture.documentFacture)
-                              
-                            }
-                            className="flex items-center text-blue-600 hover:text-blue-800"
+                        <button
+                            onClick={() => handleDownload(facture.id_facture)} 
+                            className="flex items-center text-blue-600 border-0 hover:text-blue-800 text-primary"
                           >
-                           
                             <Download className="h-4 w-4 mr-1" />
                             {facture.documentFacture}
                           </button>
+
                         </td>
                         <td>{facture.dateFacturation}</td>
                         <td>
                           <button 
                             onClick={() => handleOpenModal(facture)}
-                            className="bg-blue-600 text-black rounded-md px-4 py-2 hover:bg-blue-700 transition duration-300"
+                            className="btn btn-success bg-blue-600 text-black rounded-md px-4 py-2 hover:bg-blue-700 transition duration-300 rounded"
                           >
                             Modifier
                           </button>
