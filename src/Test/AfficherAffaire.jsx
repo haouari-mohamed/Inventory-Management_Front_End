@@ -14,6 +14,7 @@ const AfficherAffaireTest = () => {
          const response = await axios.get('http://localhost:8080/api/affaires');
          setAffaires(response.data);
          setLoading(false);
+         console.log(response.data)
       } catch (err) {
          console.error('Error fetching affaires:', err);
          setError('Error fetching affaires');
