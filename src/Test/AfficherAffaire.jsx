@@ -26,8 +26,8 @@ const AfficherAffaireTest = () => {
    }, []);
 
    return (
-      <div className="container">
-         <div className="sidebar left-sidebar">
+      <div className="cont">
+         <div className=" left-sidebar">
             <h2 className="sidebar-title">Liste des Affaires</h2>
             {loading && <p>Chargement en cours...</p>}
             {error && <p>{error}</p>}
@@ -45,7 +45,7 @@ const AfficherAffaireTest = () => {
          </div>
 
        
-         <div className="sidebar right-sidebar">
+         <div className=" right-sidebar">
             <h2 className="sidebar-title">Détails de l'Affaire</h2>
             {selectedAffaire ? (
                <p className="affaire-detail">Numéro de l'affaire : {selectedAffaire}</p>

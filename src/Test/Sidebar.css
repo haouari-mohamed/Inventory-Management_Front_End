@@ -1,36 +1,49 @@
-/* Conteneur principal pour la disposition */
-.main-container {
+/* Main container for layout */
+.cont {
    display: flex;
-   justify-content: space-between;
    height: 100vh;
+   padding: 0;
+   margin: 0;
+   width: 100%;
+  justify-content: space-between;
 }
 
-/* Barre latérale gauche (bleue) */
+/* Reset default margin and padding for the body */
+body {
+   margin: 0;
+   padding: 0;
+}
+
+/* Left sidebar (blue) */
 .left-sidebar {
    width: 250px;
-   background-color: #007bff; /* Couleur bleue */
+   background-color: #007bff; /* Blue color */
    color: white;
    padding: 20px;
    overflow-y: auto;
+   height: 100vh; /* Ensure it takes full height */
+   box-sizing: border-box; /* Includes padding in width/height */
 }
 
-/* Barre latérale droite (jaune) */
+/* Right sidebar (yellow) */
 .right-sidebar {
    width: 250px;
-   background-color: #ffeb3b; /* Couleur jaune */
+   background-color: #ffeb3b; /* Yellow color */
    color: black;
    padding: 20px;
    overflow-y: auto;
+   height: 100vh; /* Ensure it takes full height */
+   box-sizing: border-box; /* Includes padding in width/height */
 }
 
-/* Contenu principal */
+/* Main content area */
 .content {
-   flex-grow: 1; /* Prend l'espace entre les deux barres */
-   margin-left: 250px; /* Espace pour la barre gauche */
-   margin-right: 250px; /* Espace pour la barre droite */
+   flex-grow: 1; /* Expands to fill space between sidebars */
+   padding: 20px;
+   box-sizing: border-box;
 }
 
-/* Styles communs pour les titres et listes */
+/* Shared styles for titles and lists */
 .sidebar-title {
    font-size: 1.5em;
    margin-bottom: 20px;
@@ -55,7 +68,7 @@
    background-color: rgba(255, 255, 255, 0.3);
 }
 
-/* Détails de l'affaire sélectionnée */
+/* Details of the selected case */
 .affaire-detail {
    font-size: 1.2em;
    text-align: center;
