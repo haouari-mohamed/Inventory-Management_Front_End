@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './Sidebar.css'; 
 import { useNavigate } from 'react-router-dom';
+import AfficherMissionTest from './AfficherMission';
 
 const AfficherAffaireTest = () => {
    const [affaires, setAffaires] = useState([]);
@@ -15,6 +16,7 @@ const AfficherAffaireTest = () => {
          const response = await axios.get('http://localhost:8080/api/affaires');
          setAffaires(response.data);
          setLoading(false);
+         console.log(response.data)
       } catch (err) {
          console.error('Error fetching affaires:', err);
          setError('Error fetching affaires');
@@ -49,6 +51,7 @@ const AfficherAffaireTest = () => {
                ))}
             </ul>
          </div>
+         
 
          
 

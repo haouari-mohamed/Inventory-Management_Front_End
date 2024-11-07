@@ -32,32 +32,61 @@ const AfficherMissionTest = () => {
    if (!affaire) return <p>Aucune affaire trouvée.</p>;
 
    return (
-      <div className="container">
+      <div className="conta">
          <div className="sidebar">
             <AfficherAffaireTest />
          </div>
          <div className="content">
-            <h2>Détails de l'Affaire</h2>
-            <p><strong>ID de l'affaire :</strong> {affaire.idAffaire}</p>
-            <p><strong>Libellé :</strong> {affaire.libelle_affaire}</p>
-            <p><strong>Prix Global :</strong> {affaire.prixGlobal} MAD</p>
-            <p><strong>Status :</strong> {affaire.statusAffaire}</p>
-            <p><strong>Numéro de Marché :</strong> {affaire.marche}</p>
-            <p><strong>Date de Début :</strong> {new Date(affaire.dateDebut).toLocaleDateString()}</p>
-            <p><strong>Date de Fin :</strong> {new Date(affaire.dateFin).toLocaleDateString()}</p>
-            {affaire.dateArret && (
-               <p><strong>Date d'Arrêt :</strong> {new Date(affaire.dateArret).toLocaleDateString()}</p>
-            )}
-            {affaire.dateRecommencement && (
-               <p><strong>Date de Recommencement :</strong> {new Date(affaire.dateRecommencement).toLocaleDateString()}</p>
-            )}
-            <p><strong>Client :</strong> {affaire.client?.nom}</p>
-            <p><strong>Pôle Principal :</strong> {affaire.polePrincipale?.nom}</p>
-            <p><strong>Division Principale :</strong> {affaire.divisionPrincipale?.nom}</p>
-            <p><strong>Part CID :</strong> {affaire.partCID}</p>
-            <p><strong>Chef de Projet :</strong> {affaire.chefProjet?.nom}</p>
-         </div>
+         <div className="affaire-details">
+          <h2>Détails de l'Affaire</h2>
+          <p><strong>ID de l'affaire :</strong> {affaire.idAffaire}</p>
+          <p><strong>Libellé :</strong> {affaire.libelle_affaire}</p>
+          <p><strong>Prix Global :</strong> {affaire.prixGlobal} MAD</p>
+          <p><strong>Status :</strong> {affaire.statusAffaire}</p>
+          <p><strong>Numéro de Marché :</strong> {affaire.marche}</p>
+          <p><strong>Date de Début :</strong> {new Date(affaire.dateDebut).toLocaleDateString()}</p>
+          <p><strong>Date de Fin :</strong> {new Date(affaire.dateFin).toLocaleDateString()}</p>
+          {affaire.dateArret && (
+            <p><strong>Date d'Arrêt :</strong> {new Date(affaire.dateArret).toLocaleDateString()}</p>
+          )}
+          {affaire.dateRecommencement && (
+            <p><strong>Date de Recommencement :</strong> {new Date(affaire.dateRecommencement).toLocaleDateString()}</p>
+          )}
+          <p><strong>Client :</strong> {affaire.client?.nom}</p>
+          <p><strong>Pôle Principal :</strong> {affaire.polePrincipale?.nom}</p>
+          <p><strong>Division Principale :</strong> {affaire.divisionPrincipale?.nom}</p>
+          <p><strong>Part CID :</strong> {affaire.partCID}</p>
+          <p><strong>Chef de Projet :</strong> {affaire.chefProjet?.nom}</p>
+        </div>
+        <div className="mission-table">
+          <h2>Missions</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Libellé</th>
+                <th>Part Pole Transport</th>
+                <th>Part Sous-Traitance</th>
+                <th>Total Mission</th>
+                <th>Facturation Cumulée</th>
+                <th>Encaissement Cumulé</th>
+              </tr>
+            </thead>
+            <tbody>
+            {/*   {affaire.missions.map((mission) => (
+                <tr key={mission.id}>
+                  <td>{mission.libelle}</td>
+                  <td>{mission.partPoleTransport}</td>
+                  <td>{mission.partSousTraitance}</td>
+                  <td>{mission.totalMission}</td>
+                  <td>{mission.facturactionCumulee}</td>
+                  <td>{mission.encaissementCumule}</td>
+                </tr>
+              ))} */}
+            </tbody>
+          </table>
+        </div>
       </div>
+    </div>
    );
 };
 
